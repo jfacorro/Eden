@@ -121,7 +121,7 @@ defmodule ExEdn.Lexer do
   when <<sign>> in ["-", "+"] do
     token = token(:integer, <<sign>>)
     state
-    |> Map.merge(%{state: :integer, current: token})
+    |> Map.merge(%{state: :number, current: token})
     |> _tokenize(rest)
   end
   defp _tokenize(state = %{state: :exponent}, <<sign :: utf8, rest :: binary>>)
@@ -130,14 +130,14 @@ defmodule ExEdn.Lexer do
     |> append_to_current(<<sign>>)
     |> _tokenize(rest)
   end
-  defp _tokenize(state = %{state: :integer}, <<"N", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<"N", rest :: binary>>) do
     state = append_to_current(state, "N")
     state
     |> add_token(state.current)
     |> reset
     |> _tokenize(rest)
   end
-  defp _tokenize(state = %{state: :integer}, <<"M", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<"M", rest :: binary>>) do
     state = append_to_current(state, "M")
     token = token(:float, state.current.value)
     state
@@ -145,15 +145,15 @@ defmodule ExEdn.Lexer do
     |> reset
     |> _tokenize(rest)
   end
-  defp _tokenize(state = %{state: :integer}, <<".", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<".", rest :: binary>>) do
     state = append_to_current(state, ".")
     token = token(:float, state.current.value)
     state
     |> Map.merge(%{state: :fraction, current: token})
     |> _tokenize(rest)
   end
-  defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>>)
-  when s in [:integer, :float] and <<char>> in ["e", "E"] do
+  defp _tokenize(state = %{state: :number}, <<char :: utf8, rest :: binary>>)
+  when <<char>> in ["e", "E"] do
     state = append_to_current(state, <<char>>)
     token = token(:float, state.current.value)
     state
@@ -161,11 +161,11 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
   defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>> = input)
-  when s in [:integer, :float, :exponent, :fraction] do
+  when s in [:number, :exponent, :fraction] do
     cond do
       digit?(<<char>>) ->
         state
-        |> Map.merge(%{state: state.current.type})
+        |> Map.merge(%{state: :number})
         |> append_to_current(<<char>>)
         |> _tokenize(rest)
       s in [:exponent, :fraction] and separator?(<<char>>) ->
@@ -212,7 +212,7 @@ defmodule ExEdn.Lexer do
 
   # Tags
   defp _tokenize(state = %{state: :new}, <<"#", rest :: binary>>) do
-    token = token(:discard, "#_")
+    token = token(:tag, "")
     state
     |> add_token(token)
     |> _tokenize(rest)
@@ -229,7 +229,7 @@ defmodule ExEdn.Lexer do
       digit?(<<char>>) ->
         token = token(:integer, <<char>>)
         state
-        |> Map.merge(%{state: :integer, current: token})
+        |> Map.merge(%{state: :number, current: token})
         |> _tokenize(rest)
       true ->
         raise UnexpectedInputError, <<char>>
