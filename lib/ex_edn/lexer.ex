@@ -11,10 +11,21 @@ defmodule ExEdn.Lexer do
     end
   end
 
+  defmodule UnfinishedTokenError do
+    defexception [:message]
+
+    def exception(msg) do
+      %UnfinishedTokenError{message: "#{inspect msg}"}
+    end
+  end
+
   ##############################################################################
   ## API
   ##############################################################################
 
+  @doc """
+  Takes a string and returns a list of Token structs.
+  """
   def tokenize(input) do
     initial_state = %{state: :new, tokens: [], current: nil}
     _tokenize(initial_state, input)
@@ -27,6 +38,7 @@ defmodule ExEdn.Lexer do
   # End of input
   defp _tokenize(state, <<>>) do
     state
+    |> valid?
     |> add_token(state.current)
     |> Map.get(:tokens)
     |> Enum.reverse
@@ -34,22 +46,13 @@ defmodule ExEdn.Lexer do
 
   # Literals
   defp _tokenize(state = %{state: :new}, <<"nil", rest :: binary>>) do
-    token = token(:nil, "nil")
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    check_literal(state, :nil, rest)
   end
   defp _tokenize(state = %{state: :new}, <<"true", rest :: binary>>) do
-    token = token(:true, "true")
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    check_literal(state, :true, rest)
   end
   defp _tokenize(state = %{state: :new}, <<"false", rest :: binary>>) do
-    token = token(:true, "false")
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    check_literal(state, :false, rest)
   end
 
   # String
@@ -84,15 +87,23 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
 
-  # Keyword
+  # Keyword and Symbol
   defp _tokenize(state = %{state: :new}, <<":", rest :: binary>>) do
     token = token(:keyword, "")
     state
-    |> Map.merge(%{state: :keyword, current: token})
+    |> Map.merge(%{state: :symbol, current: token})
     |> _tokenize(rest)
   end
-  defp _tokenize(state = %{state: s}, <<c :: utf8, rest :: binary>> = input)
-  when s in [:keyword, :symbol] do
+  defp _tokenize(state = %{state: :symbol}, <<"/", rest :: binary>>) do
+    if not String.contains?(state.current.value, "/") do
+      state
+      |> append_to_current("/")
+      |> _tokenize(rest)
+    else
+      raise UnexpectedInputError, "/"
+    end
+  end
+  defp _tokenize(state = %{state: :symbol}, <<c :: utf8, rest :: binary>> = input) do
     if symbol_char?(<<c>>) do
       state
       |> append_to_current(<<c>>)
@@ -138,7 +149,7 @@ defmodule ExEdn.Lexer do
     state = append_to_current(state, ".")
     token = token(:float, state.current.value)
     state
-    |> Map.merge(%{state: :float, current: token})
+    |> Map.merge(%{state: :fraction, current: token})
     |> _tokenize(rest)
   end
   defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>>)
@@ -150,13 +161,16 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
   defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>> = input)
-  when s in [:integer, :float, :exponent] do
+  when s in [:integer, :float, :exponent, :fraction] do
     cond do
       digit?(<<char>>) ->
         state
+        |> Map.merge(%{state: state.current.type})
         |> append_to_current(<<char>>)
         |> _tokenize(rest)
-      delim?(<<char>>) or whitespace?(<<char>>) ->
+      s in [:exponent, :fraction] and separator?(<<char>>) ->
+        raise UnfinishedTokenError, state.current
+      separator?(<<char>>) ->
         state
         |> add_token(state.current)
         |> reset
@@ -196,7 +210,15 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
 
-  # Symbol or Invalid input
+  # Tags
+  defp _tokenize(state = %{state: :new}, <<"#", rest :: binary>>) do
+    token = token(:discard, "#_")
+    state
+    |> add_token(token)
+    |> _tokenize(rest)
+  end
+
+  # Symbol, Integer or Invalid input
   defp _tokenize(state = %{state: :new}, <<char :: utf8, rest :: binary>>) do
     cond do
       alpha?(<<char>>) ->
@@ -238,11 +260,32 @@ defmodule ExEdn.Lexer do
       current: nil}
   end
 
+  defp valid?(%{state: state, current: current})
+  when state in [:string, :exponent, :character, :fraction] do
+    raise UnfinishedTokenError, current
+  end
+  defp valid?(state) do
+    state
+  end
   defp add_token(state, nil) do
     state
   end
   defp add_token(state, token) do
     %{state | tokens: [token | state.tokens]}
+  end
+
+  defp check_literal(state, type, <<char :: utf8, rest :: binary>>) do
+    value = Atom.to_string(type)
+    if separator?(<<char>>) do
+      state
+      |> add_token(token(type, value))
+      |> _tokenize(<<char>> <> rest)
+    else
+      token = token(:symbol, value <> <<char>>)
+      state
+      |> Map.merge(%{state: :symbol, current: token})
+      |> _tokenize(rest)
+    end
   end
 
   defp delim_type("{"), do: :curly_open
@@ -262,9 +305,11 @@ defmodule ExEdn.Lexer do
 
   defp digit?(char), do: String.match?(char, ~r/[0-9]/)
 
-  defp symbol_char?(char), do: String.match?(char, ~r/[a-zA-Z0-9\.\*\+!-_\?$%&=<>]/)
+  defp symbol_char?(char), do: String.match?(char, ~r/[_a-zA-Z0-9.*+!-?$%&=<>\#:]/)
 
   defp whitespace?(char), do: String.match?(char, ~r/[\s,]/)
 
   defp delim?(char), do: String.match?(char, ~r/[\{\}\[\]\(\)]/)
+
+  defp separator?(char), do: whitespace?(char) or delim?(char)
 end
