@@ -130,6 +130,13 @@ defmodule ExEdn.LexerTest do
                                           token(:keyword, "kw")]
   end
 
+  test "Tag" do
+    assert Lexer.tokenize("#ns/name") == [token(:tag, "ns/name")]
+    assert Lexer.tokenize("#whatever") == [token(:tag, "whatever")]
+    assert Lexer.tokenize(" #whatever :kw") == [token(:tag, "whatever"),
+                                                token(:keyword, "kw")]
+  end
+
   defp token(type, value) do
     %Lexer.Token{type: type, value: value}
   end

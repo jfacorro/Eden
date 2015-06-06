@@ -214,7 +214,7 @@ defmodule ExEdn.Lexer do
   defp _tokenize(state = %{state: :new}, <<"#", rest :: binary>>) do
     token = token(:tag, "")
     state
-    |> add_token(token)
+    |> Map.merge(%{state: :symbol, current: token})
     |> _tokenize(rest)
   end
 
