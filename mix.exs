@@ -27,6 +27,6 @@ defmodule ExEdn.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [{:exreloader, github: "jfacorro/exreloader", tag: "master", only: :dev}]
   end
 end
