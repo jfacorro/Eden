@@ -12,6 +12,9 @@ defmodule ExEdn.Parser do
   def parse(tokens) when is_list(tokens) do
     state = %{tokens: tokens, node: new_node(:root)}
     state = exprs(state)
+    if not Enum.empty?(state.tokens) do
+      raise Ex.UnexpectedTokenError, List.first(state.tokens)
+    end
     Node.reverse_children(state.node)
   end
 
@@ -20,15 +23,8 @@ defmodule ExEdn.Parser do
   ##############################################################################
 
   defp exprs(state) do
-    unexpected? = fn x ->
-      is_nil(x) && not Enum.empty?(state.tokens)
-    end
-
     state
     |> expr
-    |> raise_when(Ex.UnexpectedTokenError,
-                  List.first(state.tokens),
-                  unexpected?)
     |> skip_when(&exprs/1, &is_nil/1)
     |> return_when(state, &is_nil/1)
   end

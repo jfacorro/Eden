@@ -93,6 +93,7 @@ defmodule ExEdn.Lexer do
     token = token(:character, <<char>>)
     state
     |> add_token(token)
+    |> reset # Not necessary but added for homogeneity
     |> _tokenize(rest)
   end
 
