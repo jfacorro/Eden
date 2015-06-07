@@ -87,6 +87,94 @@ defmodule ExEdn.ParserTest do
     end
   end
 
+  test "List" do
+    root = node(:root, nil, [node(:list, nil)])
+    assert parse("()") == root
+
+    root = node(:root, nil,
+                [node(:list, nil,
+                      [node(:keyword, "name"),
+                       node(:string, "John")])])
+    assert parse("(:name, \"John\")") == root
+
+    root = node(:root, nil,
+                [node(:list, nil,
+                      [node(:keyword, "name"),
+                       node(:string, "John"),
+                       node(:integer, "120")])])
+    assert parse("(:name, \"John\", 120)") == root
+
+    assert_raise Ex.UnbalancedDelimiterError, fn ->
+      parse("(nil true false ")
+    end
+  end
+
+  test "Set" do
+    root = node(:root, nil, [node(:set, nil)])
+    assert parse("#\{}") == root
+
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:keyword, "name"),
+                       node(:string, "John")])])
+    assert parse("#\{:name, \"John\"}") == root
+
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:keyword, "name"),
+                       node(:string, "John"),
+                       node(:integer, "120")])])
+    assert parse("#\{:name, \"John\", 120}") == root
+
+    assert_raise Ex.UnbalancedDelimiterError, fn ->
+      parse("#\{ nil true false ")
+    end
+  end
+
+  test "Set" do
+    root = node(:root, nil,
+                [node(:tag, "inst",
+                      [node(:string, "1985-04-12T23:20:50.52Z")])])
+    assert parse("#inst \"1985-04-12T23:20:50.52Z\"") == root
+
+    root = node(:root, nil,
+                [node(:tag, "some/tag",
+                      [node(:map, nil,
+                            [node(:keyword, "a"),
+                             node(:integer, "1")])])])
+    assert parse("#some/tag {:a 1}") == root
+
+    assert_raise Ex.IncompleteTagError, fn ->
+      parse(":some-keyword #a/tag ")
+    end
+  end
+
+  test "Discard" do
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:keyword, "name")])])
+    assert parse("#\{:name, #_ \"John\"}") == root
+
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:string, "John"),
+                       node(:integer, "120")])])
+    assert parse("#\{#_:name, \"John\", 120}") == root
+  end
+
+  test "Comment" do
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:keyword, "name")])])
+    assert parse("#\{:name, \n ;; \"John\" \n}") == root
+
+    root = node(:root, nil,
+                [node(:set, nil,
+                      [node(:string, "John"),
+                       node(:integer, "120")])])
+    assert parse("#\{\n;; :name, \n \"John\", 120}") == root
+  end
+
   defp node(type, value, children \\ []) do
     %Parser.Node{type: type, value: value, children: children}
   end
