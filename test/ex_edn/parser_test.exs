@@ -1,4 +1,4 @@
-defmodule ExEdn.LexerTest do
+defmodule ExEdn.ParserTest do
   use ExUnit.Case
   alias ExEdn.Lexer
   alias ExEdn.Exception, as: Ex
