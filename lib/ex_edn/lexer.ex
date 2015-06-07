@@ -48,25 +48,22 @@ defmodule ExEdn.Lexer do
 
   # Literals
   defp _tokenize(state = %{state: :new}, <<"nil", rest :: binary>>) do
-    check_literal(state, :nil, rest)
+    token = token(:nil, "nil")
+    start_token(state, :check_literal, token, rest)
   end
   defp _tokenize(state = %{state: :new}, <<"true", rest :: binary>>) do
-    check_literal(state, :true, rest)
+    token = token(:true, "true")
+    start_token(state, :check_literal, token, rest)
   end
   defp _tokenize(state = %{state: :new}, <<"false", rest :: binary>>) do
-    check_literal(state, :false, rest)
+    token = token(:false, "false")
+    start_token(state, :check_literal, token, rest)
   end
-
-  defp check_literal(state, type, <<>>) do
-    value = Atom.to_string(type)
-    end_token(state, token(type, value), <<>>)
-  end
-  defp check_literal(state, type, <<char :: utf8, rest :: binary>>) do
-    value = Atom.to_string(type)
+  defp _tokenize(state = %{state: :check_literal}, <<char :: utf8, rest :: binary>>) do
     if separator?(<<char>>) do
-      end_token(state, token(type, value), <<char>> <> rest)
+      end_token(state, <<char>> <> rest)
     else
-      token = token(:symbol, value <> <<char>>)
+      token = token(:symbol, state.current.value <> <<char>>)
       start_token(state, :symbol, token, rest)
     end
   end
