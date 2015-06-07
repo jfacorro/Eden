@@ -33,24 +33,17 @@ defmodule ExEdn.Lexer do
  # Comment
   defp _tokenize(state = %{state: :new}, <<";", rest :: binary>>) do
     token = token(:comment, "")
-    state
-    |> Map.merge(%{state: :comment, current: token})
-    |> _tokenize(rest)
+    start_token(state, :comment, token, rest)
   end
   defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>)
   when <<char>> in ["\n", "\r"] do
-    state
-    |> add_token(state.current)
-    |> reset
-    |> _tokenize(rest)
+    end_token(state, rest)
   end
   defp _tokenize(state = %{state: :comment}, <<";", rest :: binary>>) do
     _tokenize(state, rest)
   end
   defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>) do
-    state
-    |> append_to_current(<<char>>)
-    |> _tokenize(rest)
+    consume_char(state, <<char>>, rest)
   end
 
   # Literals
@@ -64,65 +57,58 @@ defmodule ExEdn.Lexer do
     check_literal(state, :false, rest)
   end
 
+  defp check_literal(state, type, <<>>) do
+    value = Atom.to_string(type)
+    end_token(state, token(type, value), <<>>)
+  end
+  defp check_literal(state, type, <<char :: utf8, rest :: binary>>) do
+    value = Atom.to_string(type)
+    if separator?(<<char>>) do
+      end_token(state, token(type, value), <<char>> <> rest)
+    else
+      token = token(:symbol, value <> <<char>>)
+      start_token(state, :symbol, token, rest)
+    end
+  end
+
   # String
   defp _tokenize(state = %{state: :new}, <<"\"", rest :: binary>>) do
     token = token(:string, "")
-    state
-    |> Map.merge(%{state: :string, current: token})
-    |> _tokenize(rest)
+    start_token(state, :string, token, rest)
   end
   defp _tokenize(state = %{state: :string}, <<"\\", char :: utf8, rest :: binary>>) do
-      state
-      |> append_to_current(escaped_char(<<char>>))
-      |> _tokenize(rest)
+      consume_char(state, escaped_char(<<char>>), rest)
   end
   defp _tokenize(state = %{state: :string}, <<"\"" :: utf8, rest :: binary>>) do
-    state
-    |> add_token(state.current)
-    |> reset
-    |> _tokenize(rest)
+    end_token(state, rest)
   end
-  defp _tokenize(state = %{state: :string}, <<c :: utf8, rest :: binary>>) do
-    state
-    |> append_to_current(<<c>>)
-    |> _tokenize(rest)
+  defp _tokenize(state = %{state: :string}, <<char :: utf8, rest :: binary>>) do
+    consume_char(state, <<char>>, rest)
   end
 
   # Character
   defp _tokenize(state = %{state: :new}, <<"\\", char :: utf8, rest :: binary>>) do
     token = token(:character, <<char>>)
-    state
-    |> add_token(token)
-    |> reset # Not necessary but added for homogeneity
-    |> _tokenize(rest)
+    end_token(state, token, rest)
   end
 
   # Keyword and Symbol
   defp _tokenize(state = %{state: :new}, <<":", rest :: binary>>) do
     token = token(:keyword, "")
-    state
-    |> Map.merge(%{state: :symbol, current: token})
-    |> _tokenize(rest)
+    start_token(state, :symbol, token, rest)
   end
   defp _tokenize(state = %{state: :symbol}, <<"/", rest :: binary>>) do
     if not String.contains?(state.current.value, "/") do
-      state
-      |> append_to_current("/")
-      |> _tokenize(rest)
+      consume_char(state, "/", rest)
     else
       raise Ex.UnexpectedInputError, "/"
     end
   end
   defp _tokenize(state = %{state: :symbol}, <<c :: utf8, rest :: binary>> = input) do
     if symbol_char?(<<c>>) do
-      state
-      |> append_to_current(<<c>>)
-      |> _tokenize(rest)
+      consume_char(state, <<c>>, rest)
     else
-      state
-      |> add_token(state.current)
-      |> reset
-      |> _tokenize(input)
+      end_token(state, input)
     end
   end
 
@@ -130,61 +116,43 @@ defmodule ExEdn.Lexer do
   defp _tokenize(state = %{state: :new}, <<sign :: utf8, rest :: binary>>)
   when <<sign>> in ["-", "+"] do
     token = token(:integer, <<sign>>)
-    state
-    |> Map.merge(%{state: :number, current: token})
-    |> _tokenize(rest)
+    start_token(state, :number, token, rest)
   end
   defp _tokenize(state = %{state: :exponent}, <<sign :: utf8, rest :: binary>>)
   when <<sign>> in ["-", "+"] do
-    state
-    |> append_to_current(<<sign>>)
-    |> _tokenize(rest)
+    consume_char(state, <<sign>>, rest)
   end
   defp _tokenize(state = %{state: :number}, <<"N", rest :: binary>>) do
     state = append_to_current(state, "N")
-    state
-    |> add_token(state.current)
-    |> reset
-    |> _tokenize(rest)
+    end_token(state, rest)
   end
   defp _tokenize(state = %{state: :number}, <<"M", rest :: binary>>) do
     state = append_to_current(state, "M")
     token = token(:float, state.current.value)
-    state
-    |> add_token(token)
-    |> reset
-    |> _tokenize(rest)
+    end_token(state, token, rest)
   end
   defp _tokenize(state = %{state: :number}, <<".", rest :: binary>>) do
     state = append_to_current(state, ".")
     token = token(:float, state.current.value)
-    state
-    |> Map.merge(%{state: :fraction, current: token})
-    |> _tokenize(rest)
+    start_token(state, :fraction, token, rest)
   end
   defp _tokenize(state = %{state: :number}, <<char :: utf8, rest :: binary>>)
   when <<char>> in ["e", "E"] do
     state = append_to_current(state, <<char>>)
     token = token(:float, state.current.value)
-    state
-    |> Map.merge(%{state: :exponent, current: token})
-    |> _tokenize(rest)
+    start_token(state, :exponent, token, rest)
   end
   defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>> = input)
   when s in [:number, :exponent, :fraction] do
     cond do
       digit?(<<char>>) ->
         state
-        |> Map.merge(%{state: :number})
-        |> append_to_current(<<char>>)
-        |> _tokenize(rest)
+        |> set_state(:number)
+        |> consume_char(<<char>>, rest)
       s in [:exponent, :fraction] and separator?(<<char>>) ->
         raise Ex.UnfinishedTokenError, state.current
       separator?(<<char>>) ->
-        state
-        |> add_token(state.current)
-        |> reset
-        |> _tokenize(input)
+        end_token(state, input)
       true ->
         raise Ex.UnexpectedInputError, <<char>>
     end
@@ -195,15 +163,11 @@ defmodule ExEdn.Lexer do
   when <<delim>> in ["{", "}", "[", "]", "(", ")"] do
     delim = <<delim>>
     token = token(delim_type(delim), delim)
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    end_token(state, token, rest)
   end
   defp _tokenize(state = %{state: :new}, <<"#\{", rest :: binary>>) do
     token = token(:set_open, "#\{")
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    end_token(state, token, rest)
   end
 
   # Whitespace
@@ -215,17 +179,13 @@ defmodule ExEdn.Lexer do
   # Discard
   defp _tokenize(state = %{state: :new}, <<"#_", rest :: binary>>) do
     token = token(:discard, "#_")
-    state
-    |> add_token(token)
-    |> _tokenize(rest)
+    end_token(state, token, rest)
   end
 
   # Tags
   defp _tokenize(state = %{state: :new}, <<"#", rest :: binary>>) do
     token = token(:tag, "")
-    state
-    |> Map.merge(%{state: :symbol, current: token})
-    |> _tokenize(rest)
+    start_token(state, :symbol, token, rest)
   end
 
   # Symbol, Integer or Invalid input
@@ -233,14 +193,10 @@ defmodule ExEdn.Lexer do
     cond do
       alpha?(<<char>>) ->
         token = token(:symbol, <<char>>)
-        state
-        |> Map.merge(%{state: :symbol, current: token})
-        |> _tokenize(rest)
+        start_token(state, :symbol, token, rest)
       digit?(<<char>>) ->
         token = token(:integer, <<char>>)
-        state
-        |> Map.merge(%{state: :number, current: token})
-        |> _tokenize(rest)
+        start_token(state, :number, token, rest)
       true ->
         raise Ex.UnexpectedInputError, <<char>>
     end
@@ -255,8 +211,41 @@ defmodule ExEdn.Lexer do
   ## Helper functions
   ##############################################################################
 
+  defp start_token(state, name, token, rest) do
+    state
+    |> Map.merge(%{state: name, current: token})
+    |> _tokenize(rest)
+  end
+
+  defp consume_char(state, char, rest) when is_binary(char) do
+    state
+    |> append_to_current(char)
+    |> _tokenize(rest)
+  end
+
+  defp end_token(state, rest) do
+    state
+    |> add_token(state.current)
+    |> reset
+    |> _tokenize(rest)
+  end
+
+  defp end_token(state, token, rest) do
+    state
+    |> set_token(token)
+    |> end_token(rest)
+  end
+
   defp token(type, value) do
     %Token{type: type, value: value}
+  end
+
+  defp set_token(state, token) do
+    Map.put(state, :current, token)
+  end
+
+  defp set_state(state, name) do
+    Map.put(state, :state, name)
   end
 
   defp append_to_current(%{current: current} = state, c) do
@@ -277,31 +266,12 @@ defmodule ExEdn.Lexer do
   defp valid?(state) do
     state
   end
+
   defp add_token(state, nil) do
     state
   end
   defp add_token(state, token) do
     %{state | tokens: [token | state.tokens]}
-  end
-
-  defp check_literal(state, type, <<>>) do
-    value = Atom.to_string(type)
-    state
-    |> add_token(token(type, value))
-    |> _tokenize(<<>>)
-  end
-  defp check_literal(state, type, <<char :: utf8, rest :: binary>>) do
-    value = Atom.to_string(type)
-    if separator?(<<char>>) do
-      state
-      |> add_token(token(type, value))
-      |> _tokenize(<<char>> <> rest)
-    else
-      token = token(:symbol, value <> <<char>>)
-      state
-      |> Map.merge(%{state: :symbol, current: token})
-      |> _tokenize(rest)
-    end
   end
 
   defp delim_type("{"), do: :curly_open
