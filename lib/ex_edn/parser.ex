@@ -1,31 +1,9 @@
 defmodule ExEdn.Parser do
   alias ExEdn.Lexer
   alias ExEdn.Parser.Node
+  alias ExEdn.Parser.Errors
+
   require Logger
-
-  defmodule UnexpectedTokenError do
-    defexception [:message]
-
-    def exception(msg) do
-      %UnexpectedTokenError{message: "#{inspect msg}"}
-    end
-  end
-
-  defmodule UnbalancedDelimiterError do
-    defexception [:message]
-
-    def exception(msg) do
-      %UnbalancedDelimiterError{message: "#{inspect msg}"}
-    end
-  end
-
-  defmodule UnevenExpressionCountError do
-    defexception [:message]
-
-    def exception(msg) do
-      %UnevenExpressionCountError{message: "#{inspect msg}"}
-    end
-  end
 
   def parse(input) when is_binary(input) do
     tokens = Lexer.tokenize(input)
@@ -33,21 +11,28 @@ defmodule ExEdn.Parser do
   end
   def parse(tokens) when is_list(tokens) do
     state = %{tokens: tokens, node: new_node(:root)}
-    exprs(state)
+    state = exprs(state)
+    Node.reverse_children(state.node)
   end
 
+  ##############################################################################
+  ## Rules and Productions
+  ##############################################################################
+
   defp exprs(state) do
+    ## TODO: throw UnexpectedToken when expr returns nil
+    ##       but there are still tokens left to process.
     state
     |> expr
     |> skip_when_nil(&exprs/1)
-    |> when_nil(Node.reverse_children(state.node))
+    |> when_nil(state)
   end
 
   defp expr(%{tokens: []}) do
     nil
   end
   defp expr(state) do
-    Logger.debug "EXPR #{inspect state.tokens}"
+    Logger.debug "EXPR"
     terminal(state, :nil)
     || terminal(state, :false)
     || terminal(state, :true)
@@ -56,10 +41,13 @@ defmodule ExEdn.Parser do
     || terminal(state, :integer)
     || terminal(state, :float)
     || map_begin(state)
+    || vector_begin(state)
+    || list_begin(state)
+    || tag(state)
   end
 
   defp terminal(state, type) do
-    IO.puts "TERMINAL #{inspect type}"
+    Logger.debug "TERMINAL #{inspect type}"
     {state, token} = pop_token(state)
     if token?(token, type) do
       node = new_node(type, token.value, [])
@@ -67,11 +55,13 @@ defmodule ExEdn.Parser do
     end
   end
 
+  ## Map
+
   defp map_begin(state) do
     Logger.debug "MAP BEGIN"
     {state, token} = pop_token(state)
     if token?(token, :curly_open) do
-      new_state = state
+      state
       |> set_node(new_node(:map))
       |> pairs
       |> map_end
@@ -86,27 +76,88 @@ defmodule ExEdn.Parser do
     |> skip_when_nil(&pairs/1)
     |> when_nil(state)
   end
+
   defp pair(state) do
     Logger.debug "PAIR"
-    state1 = expr(state)
-    if state1 do
-      state2 = expr(state1)
-      if is_nil(state2) do
-        raise UnevenExpressionCountError, state
-      end
-      state2
-    end
+    state
+    |> expr
+    |> skip_when_nil(&pair2/1)
+  end
+
+  defp pair2(state) do
+    state
+    |> expr
+    |> raise_when_nil(Errors.UnevenExpressionCountError, state)
   end
 
   defp map_end(state) do
     Logger.debug "MAP END"
     {state, token} = pop_token(state)
     if not token?(token, :curly_close) do
-      raise UnbalancedDelimiterError, state.node
+      raise Errors.UnbalancedDelimiterError, state.node
     end
     state
   end
 
+  ## Vector
+
+  defp vector_begin(state) do
+    Logger.debug "VECTOR BEGIN"
+    {state, token} = pop_token(state)
+    if token?(token, :bracket_open) do
+      state
+      |> set_node(new_node(:vector))
+      |> exprs
+      |> vector_end
+      |> restore_node(state)
+    end
+  end
+
+  defp vector_end(state) do
+    Logger.debug "VECTOR END #{inspect state.tokens}"
+    {state, token} = pop_token(state)
+    if not token?(token, :bracket_close) do
+      raise Errors.UnbalancedDelimiterError, state.node
+    end
+    state
+  end
+
+  ## List
+
+  defp list_begin(state) do
+    Logger.debug "LIST BEGIN"
+    {state, token} = pop_token(state)
+    if token?(token, :paren_open) do
+      state
+      |> set_node(new_node(:list))
+      |> exprs
+      |> list_end
+      |> restore_node(state)
+    end
+  end
+
+  defp list_end(state) do
+    Logger.debug "LIST END #{inspect state.tokens}"
+    {state, token} = pop_token(state)
+    if not token?(token, :paren_close) do
+      raise Errors.UnbalancedDelimiterError, state.node
+    end
+    state
+  end
+
+  ## Tag
+
+  defp tag(state) do
+    Logger.debug "LIST BEGIN"
+    {state, token} = pop_token(state)
+    if token?(token, :tag) do
+      state
+      |> set_node(new_node(:tag))
+      |> expr
+      |> raise_when_nil(Errors.IncompleteTagError, state)
+      |> restore_node(state)
+    end
+  end
   ##############################################################################
   ## Helper functions
   ##############################################################################
@@ -150,6 +201,10 @@ defmodule ExEdn.Parser do
 
   defp skip_when_nil(nil, _), do: nil
   defp skip_when_nil(x, fun), do: fun.(x)
+
+  defp raise_when_nil(nil, ex, msg), do: (raise ex, msg)
+  defp raise_when_nil(x, _, _), do: x
+
 
   defp tail([]), do: []
   defp tail(list), do: tl(list)

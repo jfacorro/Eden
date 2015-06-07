@@ -1,11 +1,12 @@
 ExEdn
 =====
 
-** TODO: Add description **
+edn (extensible data notation) parser, encoder and decoder implemented in Elixir.
 
 Grammar
 =======
 
+```
 expr -> literal | map | list | vector | tagged_value
 exprs -> expr exprs
 
@@ -20,3 +21,4 @@ list -> ( exprs )
 vector -> [ exprs ]
 
 tagged_value -> tag expr
+```
