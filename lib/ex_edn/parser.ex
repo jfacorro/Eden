@@ -20,12 +20,17 @@ defmodule ExEdn.Parser do
   ##############################################################################
 
   defp exprs(state) do
-    ## TODO: throw UnexpectedToken when expr returns nil
-    ##       but there are still tokens left to process.
+    unexpected? = fn x ->
+      is_nil(x) && not Enum.empty?(state.tokens)
+    end
+
     state
     |> expr
-    |> skip_when_nil(&exprs/1)
-    |> when_nil(state)
+    |> raise_when(Errors.UnexpectedTokenError,
+                  List.first(state.tokens),
+                  unexpected?)
+    |> skip_when(&exprs/1, &is_nil/1)
+    |> return_when(state, &is_nil/1)
   end
 
   defp expr(%{tokens: []}) do
@@ -76,22 +81,22 @@ defmodule ExEdn.Parser do
     Logger.debug "PAIRS"
     state
     |> pair
-    |> skip_when_nil(&pairs/1)
-    |> when_nil(state)
+    |> skip_when(&pairs/1, &is_nil/1)
+    |> return_when(state, &is_nil/1)
   end
 
   defp pair(state) do
     Logger.debug "PAIR"
     state
     |> expr
-    |> skip_when_nil(&pair2/1)
+    |> skip_when(&pair2/1, &is_nil/1)
   end
 
   defp pair2(state) do
     Logger.debug "PAIR2"
     state
     |> expr
-    |> raise_when_nil(Errors.UnevenExpressionCountError, state)
+    |> raise_when(Errors.UnevenExpressionCountError, state, &is_nil/1)
   end
 
   defp map_end(state) do
@@ -156,9 +161,9 @@ defmodule ExEdn.Parser do
     if token?(token, :tag) do
       Logger.debug "TAG"
       state
-      |> set_node(new_node(:tag))
+      |> set_node(new_node(:tag, token.value))
       |> expr
-      |> raise_when_nil(Errors.IncompleteTagError, state)
+      |> raise_when(Errors.IncompleteTagError, state, &is_nil/1)
       |> restore_node(state)
     end
   end
@@ -172,7 +177,7 @@ defmodule ExEdn.Parser do
       state
       |> set_node(new_node(:discard))
       |> expr
-      |> raise_when_nil(Errors.MissingDiscardExpressionError, state)
+      |> raise_when(Errors.MissingDiscardExpressionError, state, &is_nil/1)
       |> restore_node(state, false)
     end
   end
@@ -228,15 +233,17 @@ defmodule ExEdn.Parser do
 
   ## Utils
 
-  defp when_nil(nil, y), do: y
-  defp when_nil(x, _), do: x
+  defp return_when(x, y, pred?) do
+    if(pred?.(x), do: y, else: x)
+  end
 
-  defp skip_when_nil(nil, _), do: nil
-  defp skip_when_nil(x, fun), do: fun.(x)
+  defp skip_when(x, fun, pred?) do
+    if(pred?.(x), do: x, else: fun.(x))
+  end
 
-  defp raise_when_nil(nil, ex, msg), do: (raise ex, msg)
-  defp raise_when_nil(x, _, _), do: x
-
+  defp raise_when(x, ex, msg, pred?) do
+    if(pred?.(x), do: (raise ex, msg), else: x)
+  end
 
   defp tail([]), do: []
   defp tail(list), do: tl(list)
