@@ -40,10 +40,12 @@ defmodule ExEdn.Parser do
     || terminal(state, :keyword)
     || terminal(state, :integer)
     || terminal(state, :float)
+    || terminal(state, :string)
     || map_begin(state)
     || vector_begin(state)
     || list_begin(state)
     || tag(state)
+    || discard(state)
   end
 
   defp terminal(state, type) do
@@ -148,7 +150,7 @@ defmodule ExEdn.Parser do
   ## Tag
 
   defp tag(state) do
-    Logger.debug "LIST BEGIN"
+    Logger.debug "TAG"
     {state, token} = pop_token(state)
     if token?(token, :tag) do
       state
@@ -156,6 +158,20 @@ defmodule ExEdn.Parser do
       |> expr
       |> raise_when_nil(Errors.IncompleteTagError, state)
       |> restore_node(state)
+    end
+  end
+
+  ## Discard
+
+  defp discard(state) do
+    Logger.debug "DISCARD"
+    {state, token} = pop_token(state)
+    if token?(token, :discard) do
+      state
+      |> set_node(new_node(:discard))
+      |> expr
+      |> raise_when_nil(Errors.MissingDiscardExpressionError, state)
+      |> restore_node(state, false)
     end
   end
   ##############################################################################
@@ -178,10 +194,14 @@ defmodule ExEdn.Parser do
     Map.put(state, :node, node)
   end
 
-  defp restore_node(new_state, old_state) do
+  defp restore_node(new_state, old_state, add_child? \\ true) do
     child_node = Node.reverse_children(new_state.node)
     old_state = Map.put(new_state, :node, old_state.node)
-    add_node(old_state, child_node)
+    if add_child? do
+      add_node(old_state, child_node)
+    else
+      old_state
+    end
   end
 
   ## Token

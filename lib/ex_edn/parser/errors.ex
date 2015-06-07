@@ -26,4 +26,11 @@ defmodule ExEdn.Parser.Errors do
       %IncompleteTagError{message: "#{inspect msg}"}
     end
   end
+
+  defmodule MissingDiscardExpressionError do
+    defexception [:message]
+    def exception(msg) do
+      %MissingDiscardExpressionError{message: "#{inspect msg}"}
+    end
+  end
 end

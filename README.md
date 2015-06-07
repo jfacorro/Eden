@@ -10,7 +10,7 @@ Grammar
 expr -> literal | map | list | vector | tagged_value
 exprs -> expr exprs
 
-literal -> nil | true | false | keyword | symbol | integer | float
+literal -> nil | true | false | keyword | symbol | integer | float | string
 
 map -> { pairs }
 pairs -> pair pairs
