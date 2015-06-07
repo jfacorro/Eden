@@ -140,6 +140,17 @@ defmodule ExEdn.LexerTest do
                                                 token(:keyword, "kw")]
   end
 
+  test "Comment" do
+    assert Lexer.tokenize("1 ;; hello") == [token(:integer, "1"),
+                                            token(:comment, " hello")]
+    assert Lexer.tokenize("1 ;; hello\n\r") == [token(:integer, "1"),
+                                                token(:comment, " hello")]
+    assert Lexer.tokenize("1 ;; hello\n\r bla") == [token(:integer, "1"),
+                                                  token(:comment, " hello"),
+                                                  token(:symbol, "bla")]
+  end
+
+
   defp token(type, value) do
     %Lexer.Token{type: type, value: value}
   end

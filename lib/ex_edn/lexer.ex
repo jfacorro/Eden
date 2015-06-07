@@ -44,6 +44,29 @@ defmodule ExEdn.Lexer do
     |> Enum.reverse
   end
 
+ # Comment
+  defp _tokenize(state = %{state: :new}, <<";", rest :: binary>>) do
+    token = token(:comment, "")
+    state
+    |> Map.merge(%{state: :comment, current: token})
+    |> _tokenize(rest)
+  end
+  defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>)
+  when <<char>> in ["\n", "\r"] do
+    state
+    |> add_token(state.current)
+    |> reset
+    |> _tokenize(rest)
+  end
+  defp _tokenize(state = %{state: :comment}, <<";", rest :: binary>>) do
+    _tokenize(state, rest)
+  end
+  defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>) do
+    state
+    |> append_to_current(<<char>>)
+    |> _tokenize(rest)
+  end
+
   # Literals
   defp _tokenize(state = %{state: :new}, <<"nil", rest :: binary>>) do
     check_literal(state, :nil, rest)
@@ -74,9 +97,9 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
   defp _tokenize(state = %{state: :string}, <<c :: utf8, rest :: binary>>) do
-      state
-      |> append_to_current(<<c>>)
-      |> _tokenize(rest)
+    state
+    |> append_to_current(<<c>>)
+    |> _tokenize(rest)
   end
 
   # Character
