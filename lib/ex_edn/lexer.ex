@@ -274,6 +274,12 @@ defmodule ExEdn.Lexer do
     %{state | tokens: [token | state.tokens]}
   end
 
+  defp check_literal(state, type, <<>>) do
+    value = Atom.to_string(type)
+    state
+    |> add_token(token(type, value))
+    |> _tokenize(<<>>)
+  end
   defp check_literal(state, type, <<char :: utf8, rest :: binary>>) do
     value = Atom.to_string(type)
     if separator?(<<char>>) do

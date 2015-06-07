@@ -8,8 +8,11 @@ defmodule ExEdn.LexerTest do
   end
 
   test "nil, true, false" do
+    assert Lexer.tokenize("nil") == [token(:nil, "nil")]
     assert Lexer.tokenize(" nil ") == [token(:nil, "nil")]
+    assert Lexer.tokenize("true") == [token(:true, "true")]
     assert Lexer.tokenize(" true ") == [token(:true, "true")]
+    assert Lexer.tokenize("false") == [token(:false, "false")]
     assert Lexer.tokenize(" false ") == [token(:false, "false")]
 
     assert List.first(Lexer.tokenize(" nil{ ")) == token(:nil, "nil")
