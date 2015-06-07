@@ -46,12 +46,13 @@ defmodule ExEdn.Parser do
     || list_begin(state)
     || tag(state)
     || discard(state)
+    || comment(state)
   end
 
   defp terminal(state, type) do
-    Logger.debug "TERMINAL #{inspect type}"
     {state, token} = pop_token(state)
     if token?(token, type) do
+      Logger.debug "TERMINAL #{inspect type}"
       node = new_node(type, token.value, [])
       add_node(state, node)
     end
@@ -60,9 +61,9 @@ defmodule ExEdn.Parser do
   ## Map
 
   defp map_begin(state) do
-    Logger.debug "MAP BEGIN"
     {state, token} = pop_token(state)
     if token?(token, :curly_open) do
+      Logger.debug "MAP BEGIN"
       state
       |> set_node(new_node(:map))
       |> pairs
@@ -87,15 +88,16 @@ defmodule ExEdn.Parser do
   end
 
   defp pair2(state) do
+    Logger.debug "PAIR2"
     state
     |> expr
     |> raise_when_nil(Errors.UnevenExpressionCountError, state)
   end
 
   defp map_end(state) do
-    Logger.debug "MAP END"
     {state, token} = pop_token(state)
     if not token?(token, :curly_close) do
+      Logger.debug "MAP END"
       raise Errors.UnbalancedDelimiterError, state.node
     end
     state
@@ -104,9 +106,9 @@ defmodule ExEdn.Parser do
   ## Vector
 
   defp vector_begin(state) do
-    Logger.debug "VECTOR BEGIN"
     {state, token} = pop_token(state)
     if token?(token, :bracket_open) do
+      Logger.debug "VECTOR BEGIN"
       state
       |> set_node(new_node(:vector))
       |> exprs
@@ -116,9 +118,9 @@ defmodule ExEdn.Parser do
   end
 
   defp vector_end(state) do
-    Logger.debug "VECTOR END #{inspect state.tokens}"
     {state, token} = pop_token(state)
     if not token?(token, :bracket_close) do
+      Logger.debug "VECTOR END"
       raise Errors.UnbalancedDelimiterError, state.node
     end
     state
@@ -127,9 +129,9 @@ defmodule ExEdn.Parser do
   ## List
 
   defp list_begin(state) do
-    Logger.debug "LIST BEGIN"
     {state, token} = pop_token(state)
     if token?(token, :paren_open) do
+      Logger.debug "LIST BEGIN"
       state
       |> set_node(new_node(:list))
       |> exprs
@@ -139,9 +141,9 @@ defmodule ExEdn.Parser do
   end
 
   defp list_end(state) do
-    Logger.debug "LIST END #{inspect state.tokens}"
     {state, token} = pop_token(state)
     if not token?(token, :paren_close) do
+      Logger.debug "LIST END"
       raise Errors.UnbalancedDelimiterError, state.node
     end
     state
@@ -150,9 +152,9 @@ defmodule ExEdn.Parser do
   ## Tag
 
   defp tag(state) do
-    Logger.debug "TAG"
     {state, token} = pop_token(state)
     if token?(token, :tag) do
+      Logger.debug "TAG"
       state
       |> set_node(new_node(:tag))
       |> expr
@@ -164,14 +166,24 @@ defmodule ExEdn.Parser do
   ## Discard
 
   defp discard(state) do
-    Logger.debug "DISCARD"
     {state, token} = pop_token(state)
     if token?(token, :discard) do
+      Logger.debug "DISCARD"
       state
       |> set_node(new_node(:discard))
       |> expr
       |> raise_when_nil(Errors.MissingDiscardExpressionError, state)
       |> restore_node(state, false)
+    end
+  end
+
+  ## Comment
+
+  defp comment(state) do
+    {state, token} = pop_token(state)
+    if token?(token, :comment) do
+      Logger.debug "COMMENT"
+      state
     end
   end
   ##############################################################################
