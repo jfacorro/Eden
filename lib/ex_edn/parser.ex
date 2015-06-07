@@ -45,6 +45,7 @@ defmodule ExEdn.Parser do
     || map_begin(state)
     || vector_begin(state)
     || list_begin(state)
+    || set_begin(state)
     || tag(state)
     || discard(state)
     || comment(state)
@@ -145,6 +146,29 @@ defmodule ExEdn.Parser do
     {state, token} = pop_token(state)
     if not token?(token, :paren_close) do
       Logger.debug "LIST END"
+      raise Ex.UnbalancedDelimiterError, state.node
+    end
+    state
+  end
+
+  ## Set
+
+  defp set_begin(state) do
+    {state, token} = pop_token(state)
+    if token?(token, :set_open) do
+      Logger.debug "SET BEGIN"
+      state
+      |> set_node(new_node(:set))
+      |> exprs
+      |> set_end
+      |> restore_node(state)
+    end
+  end
+
+  defp set_end(state) do
+    {state, token} = pop_token(state)
+    if not token?(token, :curly_close) do
+      Logger.debug "SET END"
       raise Ex.UnbalancedDelimiterError, state.node
     end
     state
