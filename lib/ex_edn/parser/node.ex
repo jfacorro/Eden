@@ -10,4 +10,8 @@ defmodule ExEdn.Parser.Node do
       {get, :maps.put(key, update, node)}
     end
   end
+
+  def reverse_children(node) do
+    update_in(node, [:children], &Enum.reverse/1)
+  end
 end
