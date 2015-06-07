@@ -1,7 +1,7 @@
 defmodule ExEdn.Parser do
   alias ExEdn.Lexer
   alias ExEdn.Parser.Node
-  alias ExEdn.Parser.Errors
+  alias ExEdn.Exception, as: Ex
 
   require Logger
 
@@ -26,7 +26,7 @@ defmodule ExEdn.Parser do
 
     state
     |> expr
-    |> raise_when(Errors.UnexpectedTokenError,
+    |> raise_when(Ex.UnexpectedTokenError,
                   List.first(state.tokens),
                   unexpected?)
     |> skip_when(&exprs/1, &is_nil/1)
@@ -96,14 +96,14 @@ defmodule ExEdn.Parser do
     Logger.debug "PAIR2"
     state
     |> expr
-    |> raise_when(Errors.UnevenExpressionCountError, state, &is_nil/1)
+    |> raise_when(Ex.UnevenExpressionCountError, state, &is_nil/1)
   end
 
   defp map_end(state) do
     {state, token} = pop_token(state)
     if not token?(token, :curly_close) do
       Logger.debug "MAP END"
-      raise Errors.UnbalancedDelimiterError, state.node
+      raise Ex.UnbalancedDelimiterError, state.node
     end
     state
   end
@@ -126,7 +126,7 @@ defmodule ExEdn.Parser do
     {state, token} = pop_token(state)
     if not token?(token, :bracket_close) do
       Logger.debug "VECTOR END"
-      raise Errors.UnbalancedDelimiterError, state.node
+      raise Ex.UnbalancedDelimiterError, state.node
     end
     state
   end
@@ -149,7 +149,7 @@ defmodule ExEdn.Parser do
     {state, token} = pop_token(state)
     if not token?(token, :paren_close) do
       Logger.debug "LIST END"
-      raise Errors.UnbalancedDelimiterError, state.node
+      raise Ex.UnbalancedDelimiterError, state.node
     end
     state
   end
@@ -163,7 +163,7 @@ defmodule ExEdn.Parser do
       state
       |> set_node(new_node(:tag, token.value))
       |> expr
-      |> raise_when(Errors.IncompleteTagError, state, &is_nil/1)
+      |> raise_when(Ex.IncompleteTagError, state, &is_nil/1)
       |> restore_node(state)
     end
   end
@@ -177,7 +177,7 @@ defmodule ExEdn.Parser do
       state
       |> set_node(new_node(:discard))
       |> expr
-      |> raise_when(Errors.MissingDiscardExpressionError, state, &is_nil/1)
+      |> raise_when(Ex.MissingDiscardExpressionError, state, &is_nil/1)
       |> restore_node(state, false)
     end
   end
@@ -191,6 +191,7 @@ defmodule ExEdn.Parser do
       state
     end
   end
+
   ##############################################################################
   ## Helper functions
   ##############################################################################

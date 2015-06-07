@@ -1,4 +1,25 @@
-defmodule ExEdn.Parser.Errors do
+defmodule ExEdn.Exception do
+
+  ## Lexer Exceptions
+
+  defmodule UnexpectedInputError do
+    defexception [:message]
+
+    def exception(msg) do
+      %UnexpectedInputError{message: msg}
+    end
+  end
+
+  defmodule UnfinishedTokenError do
+    defexception [:message]
+
+    def exception(msg) do
+      %UnfinishedTokenError{message: "#{inspect msg}"}
+    end
+  end
+
+  ## Parser Exceptions
+
   defmodule UnexpectedTokenError do
     defexception [:message]
     def exception(msg) do

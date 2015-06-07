@@ -1,6 +1,7 @@
 defmodule ExEdn.LexerTest do
   use ExUnit.Case
   alias ExEdn.Lexer
+  alias ExEdn.Exception, as: Ex
 
   test "Whitespace" do
     assert Lexer.tokenize(",,,  ") == []
@@ -28,10 +29,10 @@ defmodule ExEdn.LexerTest do
   test "String" do
     assert Lexer.tokenize(" \"this is a string\" ") == [token(:string, "this is a string")]
     assert Lexer.tokenize(" \"this is a \\\" string\" ") == [token(:string, "this is a \" string")]
-    assert_raise Lexer.UnfinishedTokenError, fn ->
+    assert_raise Ex.UnfinishedTokenError, fn ->
       Lexer.tokenize(" \"this is an unfinished string ")
     end
-    assert_raise Lexer.UnfinishedTokenError, fn ->
+    assert_raise Ex.UnfinishedTokenError, fn ->
       Lexer.tokenize(" \"this is an unfinished string\\\"")
     end
   end
@@ -48,7 +49,7 @@ defmodule ExEdn.LexerTest do
     assert Lexer.tokenize(":question?{") == [token(:keyword, "question?"), token(:curly_open, "{")]
     assert Lexer.tokenize(":k?+._-!7><$&=*") == [token(:keyword, "k?+._-!7><$&=*")]
 
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       Lexer.tokenize(" :question?\\")
     end
   end
@@ -61,10 +62,10 @@ defmodule ExEdn.LexerTest do
     assert Lexer.tokenize("k?+._-!7><$&=*") == [token(:symbol, "k?+._-!7><$&=*")]
     assert Lexer.tokenize("ns/name") == [token(:symbol, "ns/name")]
 
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       Lexer.tokenize(" question?\\")
     end
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       Lexer.tokenize("ns/name/ss")
     end
   end
@@ -75,7 +76,7 @@ defmodule ExEdn.LexerTest do
     assert Lexer.tokenize("1234N") == [token(:integer, "1234N")]
     assert Lexer.tokenize("1234N{") == [token(:integer, "1234N"), token(:curly_open, "{")]
 
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       assert Lexer.tokenize("1234a")
     end
   end
@@ -94,22 +95,22 @@ defmodule ExEdn.LexerTest do
     assert Lexer.tokenize("1234e-12") == [token(:float, "1234e-12")]
     assert Lexer.tokenize("1234e+12") == [token(:float, "1234e+12")]
 
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       assert Lexer.tokenize("1234.a")
     end
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       assert Lexer.tokenize("1234.121a ")
     end
-    assert_raise Lexer.UnexpectedInputError, fn ->
+    assert_raise Ex.UnexpectedInputError, fn ->
       assert Lexer.tokenize("1234E0a1")
     end
-    assert_raise Lexer.UnfinishedTokenError, fn ->
+    assert_raise Ex.UnfinishedTokenError, fn ->
       Lexer.tokenize("1234E")
     end
-    assert_raise Lexer.UnfinishedTokenError, fn ->
+    assert_raise Ex.UnfinishedTokenError, fn ->
       Lexer.tokenize("1234.")
     end
-    assert_raise Lexer.UnfinishedTokenError, fn ->
+    assert_raise Ex.UnfinishedTokenError, fn ->
       Lexer.tokenize("1234. :kw")
     end
   end

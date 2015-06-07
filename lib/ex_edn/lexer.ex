@@ -1,22 +1,8 @@
 defmodule ExEdn.Lexer do
+  alias ExEdn.Exception, as: Ex
+
   defmodule Token do
     defstruct type: nil, value: nil
-  end
-
-  defmodule UnexpectedInputError do
-    defexception [:message]
-
-    def exception(msg) do
-      %UnexpectedInputError{message: msg}
-    end
-  end
-
-  defmodule UnfinishedTokenError do
-    defexception [:message]
-
-    def exception(msg) do
-      %UnfinishedTokenError{message: "#{inspect msg}"}
-    end
   end
 
   ##############################################################################
@@ -123,7 +109,7 @@ defmodule ExEdn.Lexer do
       |> append_to_current("/")
       |> _tokenize(rest)
     else
-      raise UnexpectedInputError, "/"
+      raise Ex.UnexpectedInputError, "/"
     end
   end
   defp _tokenize(state = %{state: :symbol}, <<c :: utf8, rest :: binary>> = input) do
@@ -192,14 +178,14 @@ defmodule ExEdn.Lexer do
         |> append_to_current(<<char>>)
         |> _tokenize(rest)
       s in [:exponent, :fraction] and separator?(<<char>>) ->
-        raise UnfinishedTokenError, state.current
+        raise Ex.UnfinishedTokenError, state.current
       separator?(<<char>>) ->
         state
         |> add_token(state.current)
         |> reset
         |> _tokenize(input)
       true ->
-        raise UnexpectedInputError, <<char>>
+        raise Ex.UnexpectedInputError, <<char>>
     end
   end
 
@@ -255,13 +241,13 @@ defmodule ExEdn.Lexer do
         |> Map.merge(%{state: :number, current: token})
         |> _tokenize(rest)
       true ->
-        raise UnexpectedInputError, <<char>>
+        raise Ex.UnexpectedInputError, <<char>>
     end
   end
 
   # Unexpected Input
   defp _tokenize(_, <<char :: utf8, _ :: binary>>) do
-    raise UnexpectedInputError, <<char>>
+    raise Ex.UnexpectedInputError, <<char>>
   end
 
   ##############################################################################
@@ -285,7 +271,7 @@ defmodule ExEdn.Lexer do
 
   defp valid?(%{state: state, current: current})
   when state in [:string, :exponent, :character, :fraction] do
-    raise UnfinishedTokenError, current
+    raise Ex.UnfinishedTokenError, current
   end
   defp valid?(state) do
     state
