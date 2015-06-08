@@ -131,7 +131,7 @@ defmodule ExEdn.ParserTest do
     end
   end
 
-  test "Set" do
+  test "Tag" do
     root = node(:root, nil,
                 [node(:tag, "inst",
                       [node(:string, "1985-04-12T23:20:50.52Z")])])
