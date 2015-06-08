@@ -5,11 +5,8 @@ defmodule ExEdn.Parser do
 
   require Logger
 
-  def parse(input) when is_binary(input) do
-    tokens = Lexer.tokenize(input)
-    parse(tokens)
-  end
-  def parse(tokens) when is_list(tokens) do
+  def parse(input, opts \\ [location: false]) when is_binary(input) do
+    tokens = Lexer.tokenize(input, opts)
     state = %{tokens: tokens, node: new_node(:root)}
     state = exprs(state)
     if not Enum.empty?(state.tokens) do
@@ -55,7 +52,7 @@ defmodule ExEdn.Parser do
     {state, token} = pop_token(state)
     if token?(token, type) do
       Logger.debug "TERMINAL #{inspect type}"
-      node = new_node(type, token.value, [])
+      node = new_node(type, token, true)
       add_node(state, node)
     end
   end
@@ -67,7 +64,7 @@ defmodule ExEdn.Parser do
     if token?(token, :curly_open) do
       Logger.debug "MAP BEGIN"
       state
-      |> set_node(new_node(:map))
+      |> set_node(new_node(:map, token))
       |> pairs
       |> map_end
       |> restore_node(state)
@@ -112,7 +109,7 @@ defmodule ExEdn.Parser do
     if token?(token, :bracket_open) do
       Logger.debug "VECTOR BEGIN"
       state
-      |> set_node(new_node(:vector))
+      |> set_node(new_node(:vector, token))
       |> exprs
       |> vector_end
       |> restore_node(state)
@@ -135,7 +132,7 @@ defmodule ExEdn.Parser do
     if token?(token, :paren_open) do
       Logger.debug "LIST BEGIN"
       state
-      |> set_node(new_node(:list))
+      |> set_node(new_node(:list, token))
       |> exprs
       |> list_end
       |> restore_node(state)
@@ -158,7 +155,7 @@ defmodule ExEdn.Parser do
     if token?(token, :set_open) do
       Logger.debug "SET BEGIN"
       state
-      |> set_node(new_node(:set))
+      |> set_node(new_node(:set, token))
       |> exprs
       |> set_end
       |> restore_node(state)
@@ -180,10 +177,11 @@ defmodule ExEdn.Parser do
     {state, token} = pop_token(state)
     if token?(token, :tag) do
       Logger.debug "TAG"
+      node = new_node(:tag, token, true)
       state
-      |> set_node(new_node(:tag, token.value))
+      |> set_node(node)
       |> expr
-      |> raise_when(Ex.IncompleteTagError, state, &is_nil/1)
+      |> raise_when(Ex.IncompleteTagError, node, &is_nil/1)
       |> restore_node(state)
     end
   end
@@ -195,7 +193,7 @@ defmodule ExEdn.Parser do
     if token?(token, :discard) do
       Logger.debug "DISCARD"
       state
-      |> set_node(new_node(:discard))
+      |> set_node(new_node(:discard, token))
       |> expr
       |> raise_when(Ex.MissingDiscardExpressionError, state, &is_nil/1)
       |> restore_node(state, false)
@@ -218,8 +216,17 @@ defmodule ExEdn.Parser do
 
   ## Node
 
-  defp new_node(type, value \\ nil, children \\ []) do
-    %Node{type: type, value: value, children: children}
+  defp new_node(type, token \\ nil, use_value? \\ false) do
+    location = if token && Map.has_key?(token, :location) do
+                 token.location
+               end
+    value = if token && use_value? do
+              token.value
+            end
+    %Node{type: type,
+          location: location,
+          value: value,
+          children: []}
   end
 
   defp add_node(state, node) do

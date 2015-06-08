@@ -176,6 +176,9 @@ defmodule ExEdn.ParserTest do
   end
 
   defp node(type, value, children \\ []) do
-    %Parser.Node{type: type, value: value, children: children}
+    %Parser.Node{type: type,
+                 value: value,
+                 children: children,
+                 location: nil}
   end
 end
