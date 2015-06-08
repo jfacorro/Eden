@@ -96,7 +96,7 @@ defmodule ExEdn.Lexer do
     # TODO: this will cause the line count to get corrupted,
     #       either use the original or send the real content as
     #       an optional argument.
-    consume_char(state, escaped_char(<<char>>), rest)
+    consume_char(state, escaped_char(<<char>>), rest, <<"\\", char :: utf8>>)
   end
   defp _tokenize(state = %{state: :string}, <<"\"" :: utf8, rest :: binary>>) do
     end_token(state, "\"", rest)
@@ -238,9 +238,9 @@ defmodule ExEdn.Lexer do
     |> _tokenize(rest)
   end
 
-  defp consume_char(state, char, rest) when is_binary(char) do
+  defp consume_char(state, char, rest, real_char \\ nil) when is_binary(char) do
     state
-    |> update_location(char)
+    |> update_location(real_char || char)
     |> append_to_current(char)
     |> _tokenize(rest)
   end
@@ -273,6 +273,9 @@ defmodule ExEdn.Lexer do
     |> put_in([:location, :line], state.location.line + 1)
     |> put_in([:location, :col], 0)
     |> update_location(rest)
+  end
+  defp update_location(state, <<"\r" :: utf8, rest :: binary>>) do
+    update_location(state, rest)
   end
   defp update_location(state, <<_ :: utf8, rest :: binary>>) do
     state
