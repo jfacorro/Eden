@@ -65,4 +65,13 @@ defmodule ExEdn.Exception do
       %MissingDiscardExpressionError{message: "#{inspect msg}"}
     end
   end
+
+  ## Decode Exceptions
+
+  defmodule EmptyInputError do
+    defexception [:message]
+    def exception(msg) do
+      %EmptyInputError{message: "#{inspect msg}"}
+    end
+  end
 end

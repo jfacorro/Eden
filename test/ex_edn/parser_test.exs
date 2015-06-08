@@ -36,6 +36,11 @@ defmodule ExEdn.ParserTest do
                  node(:string, "truthy"),
                  node(:keyword, "falsey")])
     assert parse(":nilo \"truthy\" :falsey") == root
+
+    root = node(:root, nil,
+                [node(:character, "h"),
+                 node(:character, "i")])
+    assert parse("\\h\\i") == root
   end
 
   test "Map" do

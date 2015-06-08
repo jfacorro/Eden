@@ -1,17 +1,27 @@
 defmodule ExEdn do
-  def encode(data) do
-    raise "Ucd nimplemented function"
-  end
+  import ExEdn.Parser
+  alias ExEdn.Encode
+  alias ExEdn.Decode
+  alias ExEdn.Exception, as: Ex
 
-  def encode!(data) do
+  def encode(_data) do
     raise "Unimplemented function"
   end
 
-  def decode(input) do
+  def encode!(data) do
+    Encode.encode(data)
+  end
+
+  def decode(_input) do
     raise "Unimplemented function"
   end
 
   def decode!(input) do
-    raise "Unimplemented function"
+    tree = parse(input, location: true)
+    case Decode.decode(tree) do
+      [] -> raise Ex.EmptyInputError, input
+      [data] -> data
+      data -> data
+    end
   end
 end

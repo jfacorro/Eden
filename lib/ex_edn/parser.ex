@@ -39,6 +39,7 @@ defmodule ExEdn.Parser do
     || terminal(state, :integer)
     || terminal(state, :float)
     || terminal(state, :string)
+    || terminal(state, :character)
     || map_begin(state)
     || vector_begin(state)
     || list_begin(state)
