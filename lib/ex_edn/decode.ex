@@ -33,9 +33,11 @@ defmodule ExEdn.Decode do
     String.to_atom(value)
   end
   def decode(%Node{type: :integer, value: value}) do
+    value = String.rstrip(value, ?N)
     :erlang.binary_to_integer(value)
   end
   def decode(%Node{type: :float, value: value}) do
+    value = String.rstrip(value, ?M)
     :erlang.binary_to_float(value)
   end
   def decode(%Node{type: :list, children: children}) do
