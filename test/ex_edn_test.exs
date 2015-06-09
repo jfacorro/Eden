@@ -5,7 +5,6 @@ defmodule ExEdnTest do
   alias ExEdn.Symbol
   alias ExEdn.UUID
   alias ExEdn.Tag
-  alias ExEdn.Exception, as: Ex
 
   test "Literals" do
     assert decode!("nil") == nil

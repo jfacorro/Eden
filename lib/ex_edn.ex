@@ -1,15 +1,17 @@
 defmodule ExEdn do
   import ExEdn.Parser
-  alias ExEdn.Encode
   alias ExEdn.Decode
   alias ExEdn.Exception, as: Ex
 
+  @default_handlers %{"inst" => &ExEdn.Tag.inst/1,
+                      "uuid" => &ExEdn.Tag.uuid/1}
+
   def encode(_data) do
-    raise "Unimplemented function"
+    raise Ex.NotImplementedError, "encode/1"
   end
 
-  def encode!(data) do
-    Encode.encode(data)
+  def encode!(_data) do
+    raise Ex.NotImplementedError, "encode!/1"
   end
 
   def decode(input) do
@@ -19,9 +21,6 @@ defmodule ExEdn do
       e -> {:error, e.__struct__}
     end
   end
-
-  @default_handlers %{"inst" => &ExEdn.Tag.inst/1,
-                      "uuid" => &ExEdn.Tag.uuid/1}
 
   def decode!(input, opts \\ []) do
     tree = parse(input, location: true)
