@@ -3,6 +3,7 @@ defmodule ExEdnTest do
   import ExEdn
   alias ExEdn.Character
   alias ExEdn.Symbol
+  alias ExEdn.UUID
   alias ExEdn.Tag
   alias ExEdn.Exception, as: Ex
 
@@ -53,7 +54,7 @@ defmodule ExEdnTest do
   test "Tag" do
     date = Timex.DateFormat.parse("1985-04-12T23:20:50.52Z", "{RFC3339z}")
     assert decode!("#inst \"1985-04-12T23:20:50.52Z\"") == date
-    assert decode!("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\"") == "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+    assert decode!("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\"") == %UUID{value: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"}
 
     assert decode!("#custom/tag (1 2 3)") == %Tag{name: "custom/tag", value: [1, 2, 3]}
     handlers = %{"custom/tag" => &custom_tag_handler/1}
