@@ -38,6 +38,13 @@ defmodule ExEdn.Decode do
   end
   def decode(%Node{type: :float, value: value}) do
     value = String.rstrip(value, ?M)
+    if not String.contains?(value, ".") do
+      if String.match?(value, ~r/[eE]/) do
+        value = String.replace(value, ~r/[eE]/, ".0E")
+      else
+        value = value <> ".0"
+      end
+    end
     :erlang.binary_to_float(value)
   end
   def decode(%Node{type: :list, children: children}) do
