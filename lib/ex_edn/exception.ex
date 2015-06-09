@@ -74,4 +74,11 @@ defmodule ExEdn.Exception do
       %EmptyInputError{message: "#{inspect msg}"}
     end
   end
+
+  defmodule NotImplementedError do
+    defexception [:message]
+    def exception(msg) do
+      %NotImplementedError{message: msg}
+    end
+  end
 end

@@ -2,6 +2,7 @@ defmodule ExEdn.Decode do
   alias ExEdn.Parser.Node
   alias ExEdn.Character
   alias ExEdn.Symbol
+  alias ExEdn.Exception, as: Ex
   require Integer
 
   def decode(children) when is_list(children) do
@@ -68,10 +69,10 @@ defmodule ExEdn.Decode do
   def decode(%Node{type: :set, children: children}) do
     children
     |> decode
-    |> Enum.reduce(HashSet.new, fn x, acc -> HashSet.put(acc, x) end)
+    |> Enum.into(HashSet.new)
   end
   def decode(%Node{type: :tag, children: [_]}) do
-    raise "Tag decoding not implemented"
+    raise Ex.NotImplementedError, "Tag decoding"
   end
   def decode(%Node{type: type}) do
     raise "Unrecognized node type: #{inspect type}"
