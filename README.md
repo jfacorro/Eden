@@ -1,7 +1,7 @@
 ExEdn
 =====
 
-edn (extensible data notation) parser, encoder and decoder implemented in Elixir.
+edn (extensible data notation) encoder/decoder implemented in Elixir.
 
 ## Data Structures Mapping: **edn** <-> **Elixir**
 
@@ -20,6 +20,8 @@ edn (extensible data notation) parser, encoder and decoder implemented in Elixir
 | `vector`  | `Array`  |
 | `map`  | `Map` |
 | `set`  | `HashSet` |
+| `#inst`  | `Timex.DateTime` |
+| `#uuid`  | `ExEdn.UUID` |
 
 ## Further Considerations
 
