@@ -12,8 +12,12 @@ defmodule ExEdn do
     Encode.encode(data)
   end
 
-  def decode(_input) do
-    raise "Unimplemented function"
+  def decode(input) do
+    try do
+      {:ok, decode!(input)}
+    rescue
+      e -> {:error, e.__struct__}
+    end
   end
 
   def decode!(input) do

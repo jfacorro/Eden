@@ -39,6 +39,8 @@ defmodule ExEdn.Decode do
   end
   def decode(%Node{type: :float, value: value}) do
     value = String.rstrip(value, ?M)
+    # Elixir/Erlang don't convert to float if there
+    # is no decimal part.
     if not String.contains?(value, ".") do
       if String.match?(value, ~r/[eE]/) do
         value = String.replace(value, ~r/[eE]/, ".0E")
