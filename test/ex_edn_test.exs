@@ -3,6 +3,7 @@ defmodule ExEdnTest do
   import ExEdn
   alias ExEdn.Character
   alias ExEdn.Symbol
+  alias ExEdn.Tag
   alias ExEdn.Exception, as: Ex
 
   test "Literals" do
@@ -50,9 +51,17 @@ defmodule ExEdnTest do
   end
 
   test "Tag" do
-    assert_raise Ex.NotImplementedError, fn ->
-      decode!("#inst \"1985-04-12T23:20:50.52Z\"")
-    end
+    date = Timex.DateFormat.parse("1985-04-12T23:20:50.52Z", "{RFC3339z}")
+    assert decode!("#inst \"1985-04-12T23:20:50.52Z\"") == date
+    assert decode!("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\"") == "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+
+    assert decode!("#custom/tag (1 2 3)") == %Tag{name: "custom/tag", value: [1, 2, 3]}
+    handlers = %{"custom/tag" => &custom_tag_handler/1}
+    assert decode!("#custom/tag (1 2 3)", handlers: handlers) == [:a, :b, :c]
   end
 
+  def custom_tag_handler(value) when is_list(value) do
+    mapping = %{1 => :a, 2 => :b, 3 => :c}
+    Enum.map(value, fn x -> mapping[x] end)
+  end
 end

@@ -45,10 +45,10 @@ defmodule ExEdn.Exception do
     end
   end
 
-  defmodule UnevenExpressionCountError do
+  defmodule OddExpressionCountError do
     defexception [:message]
     def exception(msg) do
-      %UnevenExpressionCountError{message: "#{inspect msg}"}
+      %OddExpressionCountError{message: "#{inspect msg}"}
     end
   end
 

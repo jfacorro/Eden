@@ -1,2 +1,3 @@
 %{"array": {:hex, :array, "1.0.1"},
-  "exreloader": {:git, "git://github.com/jfacorro/exreloader.git", "c4fee9c3a78239168bcbb45cdb6a76942da02a29", [tag: "master"]}}
+  "exreloader": {:git, "git://github.com/jfacorro/exreloader.git", "c4fee9c3a78239168bcbb45cdb6a76942da02a29", [tag: "master"]},
+  "timex": {:hex, :timex, "0.13.4"}}

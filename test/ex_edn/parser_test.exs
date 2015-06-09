@@ -61,7 +61,7 @@ defmodule ExEdn.ParserTest do
                        node(:integer, "120")])])
     assert parse("{:name \"John\", :age 120}") == root
 
-    assert_raise Ex.UnevenExpressionCountError, fn ->
+    assert_raise Ex.OddExpressionCountError, fn ->
       parse("{nil true false}")
     end
 

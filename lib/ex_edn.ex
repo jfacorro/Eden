@@ -20,9 +20,14 @@ defmodule ExEdn do
     end
   end
 
-  def decode!(input) do
+  @default_handlers %{"inst" => &ExEdn.Tag.inst/1,
+                      "uuid" => &ExEdn.Tag.uuid/1}
+
+  def decode!(input, opts \\ []) do
     tree = parse(input, location: true)
-    case Decode.decode(tree) do
+    handlers = Map.merge(@default_handlers, opts[:handlers] || %{})
+    opts = [handlers: handlers]
+    case Decode.decode(tree, opts) do
       [] -> raise Ex.EmptyInputError, input
       [data] -> data
       data -> data

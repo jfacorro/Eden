@@ -85,7 +85,7 @@ defmodule ExEdn.Parser do
   defp pair2(state) do
     state
     |> expr
-    |> raise_when(Ex.UnevenExpressionCountError, state, &is_nil/1)
+    |> raise_when(Ex.OddExpressionCountError, state, &is_nil/1)
   end
 
   defp map_end(state) do
