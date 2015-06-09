@@ -36,6 +36,11 @@ defmodule ExEdn.ParserTest do
                  node(:string, "truthy"),
                  node(:keyword, "falsey")])
     assert parse(":nilo \"truthy\" :falsey") == root
+
+    root = node(:root, nil,
+                [node(:character, "h"),
+                 node(:character, "i")])
+    assert parse("\\h\\i") == root
   end
 
   test "Map" do
@@ -56,7 +61,7 @@ defmodule ExEdn.ParserTest do
                        node(:integer, "120")])])
     assert parse("{:name \"John\", :age 120}") == root
 
-    assert_raise Ex.UnevenExpressionCountError, fn ->
+    assert_raise Ex.OddExpressionCountError, fn ->
       parse("{nil true false}")
     end
 

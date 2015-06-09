@@ -16,7 +16,7 @@ defmodule ExEdn.Parser.Node do
 
     def inspect(node, opts) do
       type_str = Atom.to_string(node.type)
-      value_str = node.value || ""
+      value_str = if node.value, do: node.value <> " ", else: ""
 
       location_str = ""
       loc = node.location
@@ -29,7 +29,7 @@ defmodule ExEdn.Parser.Node do
       opts = Map.put(opts, :level, level + 2)
       padding = String.duplicate(" ", level)
 
-      concat [padding, "",type_str , ": ", value_str, location_str, "\n"]
+      concat [padding, "",type_str , " ", value_str, location_str, "\n"]
               ++ Enum.map(node.children, fn x -> to_doc(x, opts)end )
     end
   end

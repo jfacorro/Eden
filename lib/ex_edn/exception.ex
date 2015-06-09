@@ -45,10 +45,10 @@ defmodule ExEdn.Exception do
     end
   end
 
-  defmodule UnevenExpressionCountError do
+  defmodule OddExpressionCountError do
     defexception [:message]
     def exception(msg) do
-      %UnevenExpressionCountError{message: "#{inspect msg}"}
+      %OddExpressionCountError{message: "#{inspect msg}"}
     end
   end
 
@@ -63,6 +63,26 @@ defmodule ExEdn.Exception do
     defexception [:message]
     def exception(msg) do
       %MissingDiscardExpressionError{message: "#{inspect msg}"}
+    end
+  end
+
+  ## Decode Exceptions
+
+  defmodule EmptyInputError do
+    defexception [:message]
+    def exception(msg) do
+      %EmptyInputError{message: "#{inspect msg}"}
+    end
+  end
+
+  defmodule NotImplementedError do
+    defexception [:message]
+    def exception(msg) when is_binary(msg) do
+      %NotImplementedError{message: msg}
+    end
+    def exception({function, arity}) do
+      function = Atom.to_string function
+      %NotImplementedError{message: "#{function}/#{inspect arity}"}
     end
   end
 end
