@@ -7,11 +7,11 @@ defmodule ExEdn do
                       "uuid" => &ExEdn.Tag.uuid/1}
 
   def encode(_data) do
-    raise Ex.NotImplementedError, "encode/1"
+    raise Ex.NotImplementedError, __ENV__.function
   end
 
   def encode!(_data) do
-    raise Ex.NotImplementedError, "encode!/1"
+    raise Ex.NotImplementedError, __ENV__.function
   end
 
   def decode(input) do

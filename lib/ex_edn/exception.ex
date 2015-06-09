@@ -77,8 +77,12 @@ defmodule ExEdn.Exception do
 
   defmodule NotImplementedError do
     defexception [:message]
-    def exception(msg) do
+    def exception(msg) when is_binary(msg) do
       %NotImplementedError{message: msg}
+    end
+    def exception({function, arity}) do
+      function = Atom.to_string function
+      %NotImplementedError{message: "#{function}/#{inspect arity}"}
     end
   end
 end
