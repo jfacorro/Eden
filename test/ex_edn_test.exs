@@ -5,11 +5,25 @@ defmodule ExEdnTest do
   alias ExEdn.Symbol
   alias ExEdn.UUID
   alias ExEdn.Tag
+  alias ExEdn.Exception, as: Ex
 
-  test "Literals" do
+  ## Decode
+
+  test "Decode Empty Input" do
+    e = %Ex.EmptyInputError{}
+    assert decode("") == {:error, e.__struct__}
+
+    assert_raise Ex.EmptyInputError, fn ->
+      decode!("")
+    end
+
+  end
+
+  test "Decode Literals" do
     assert decode!("nil") == nil
     assert decode!("true") == true
     assert decode!("false") == false
+    assert decode!("false false") == [false, false]
 
     assert decode!("\"hello world!\"") == "hello world!"
     assert decode!("\"hello \\n world!\"") == "hello \n world!"
@@ -31,27 +45,31 @@ defmodule ExEdnTest do
     assert decode!("42.01E+1") == 420.1
   end
 
-  test "List" do
+  test "Decode List" do
     assert decode!("(1 :a 42.0)") == [1, :a, 42.0]
   end
 
-  test "Vector" do
+  test "Decode Vector" do
     array = Array.from_list([1, :a, 42.0])
     assert decode!("[1 :a 42.0]") == array
   end
 
-  test "Map" do
+  test "Decode Map" do
     map = %{name: "John", age: 42}
     assert decode!("{:name \"John\" :age 42}") == map
+
+    assert_raise Ex.OddExpressionCountError, fn ->
+      decode!("{:name \"John\" :age}")
+    end
   end
 
-  test "Set" do
+  test "Decode Set" do
     set = Enum.into([:name, "John", :age, 42], HashSet.new)
     assert decode!("#\{:name \"John\" :age 42}") == set
   end
 
-  test "Tag" do
-    date = Timex.DateFormat.parse("1985-04-12T23:20:50.52Z", "{RFC3339z}")
+  test "Decode Tag" do
+    date = Timex.DateFormat.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
     assert decode!("#inst \"1985-04-12T23:20:50.52Z\"") == date
     assert decode!("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\"") == %UUID{value: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"}
 
@@ -60,7 +78,70 @@ defmodule ExEdnTest do
     assert decode!("#custom/tag (1 2 3)", handlers: handlers) == [:a, :b, :c]
   end
 
-  def custom_tag_handler(value) when is_list(value) do
+  ## Encode
+
+  test "Encode Literals" do
+    assert encode!(nil) == "nil"
+    assert encode!(true) == "true"
+    assert encode!(false) == "false"
+
+    assert encode!("hello world!") == "\"hello world!\""
+    assert encode!("hello \n world!") == "\"hello \n world!\""
+
+    assert encode!(Character.new("n")) == "\\n"
+    assert encode!(Character.new("z")) == "\\z"
+
+    assert encode!(Symbol.new("a-symbol")) == "a-symbol"
+    assert encode!(:"the-keyword") == ":the-keyword"
+
+    assert encode!(42) == "42"
+
+    assert encode!(42.0) == "42.0"
+    assert encode!(42.0e3) == "4.2e4"
+    assert encode!(42.0e-3) == "0.042"
+    assert encode!(42.0e-1) == "4.2"
+    assert encode!(42.01E+1) == "420.1"
+  end
+
+  test "Encode List" do
+    assert encode!([1, :a, 42.0]) == "(1, :a, 42.0)"
+  end
+
+  test "Encode Vector" do
+    array = Array.from_list([1, :a, 42.0])
+    assert encode!(array) == "[1, :a, 42.0]"
+  end
+
+  test "Encode Map" do
+    map = %{name: "John", age: 42}
+    assert encode!(map) == "{:age 42, :name \"John\"}"
+  end
+
+  test "Encode Set" do
+    set = Enum.into([:name, "John", :age, 42], HashSet.new)
+    assert encode!(set) == "#\{:name, :age, \"John\", 42}"
+  end
+
+  test "Encode Tag" do
+    date = Timex.DateFormat.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
+    assert encode!(date) == "#inst \"1985-04-12T23:20:50.052Z\""
+    uuid = UUID.new("f81d4fae-7dec-11d0-a765-00a0c91e6bf6")
+    assert encode!(uuid) == "#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\""
+
+    some_tag = Tag.new("custom/tag", :joni)
+    assert encode!(some_tag) == "#custom/tag :joni"
+  end
+
+  test "Encode Unknown Type" do
+    e = %Protocol.UndefinedError{}
+    assert encode(self) == {:error, e.__struct__}
+
+    assert_raise Protocol.UndefinedError, fn ->
+      encode!(self)
+    end
+  end
+
+  defp custom_tag_handler(value) when is_list(value) do
     mapping = %{1 => :a, 2 => :b, 3 => :c}
     Enum.map(value, fn x -> mapping[x] end)
   end

@@ -7,6 +7,10 @@ defmodule ExEdn.LexerTest do
   test "Whitespace" do
     assert tokenize(",,,  ") == []
     assert tokenize(" \n \t, \r") == []
+
+    assert_raise Ex.UnexpectedInputError, fn ->
+      tokenize(" \n \t, \r a| ,,,")
+    end
   end
 
   test "nil, true, false" do
@@ -73,6 +77,8 @@ defmodule ExEdn.LexerTest do
 
   test "Integer" do
     assert tokenize("1234") == [token(:integer, "1234")]
+    assert tokenize("-1234") == [token(:integer, "-1234")]
+    assert tokenize("+1234") == [token(:integer, "+1234")]
     assert tokenize(" 1234 ") == [token(:integer, "1234")]
     assert tokenize("1234N") == [token(:integer, "1234N")]
     assert tokenize("1234N{") == [token(:integer, "1234N"), token(:curly_open, "{")]

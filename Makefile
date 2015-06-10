@@ -23,7 +23,7 @@ clean: clean-deps
 	mix clean
 
 test: app
-	mix test
+	mix test --cover
 
 shell: app
 	iex --name ${PROJECT}@`hostname` -pa _build/dev/consolidated -S mix
