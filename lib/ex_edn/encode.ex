@@ -6,6 +6,7 @@ alias ExEdn.UUID
 alias ExEdn.Tag
 
 defprotocol ExEdn.Encode do
+  @fallback_to_any true
   def encode(value)
 end
 
@@ -99,5 +100,14 @@ defimpl Encode, for: Timex.DateTime do
   def encode(datetime) do
     value = Timex.DateFormat.format!(datetime, "{RFC3339z}")
     Encode.encode(Tag.new("inst", value))
+  end
+end
+
+defimpl Encode, for: Any do
+  def encode(struct) when is_map(struct) do
+    Encode.encode(Map.from_struct(struct))
+  end
+  def encode(_)  do
+    raise Protocol.UndefinedError
   end
 end
