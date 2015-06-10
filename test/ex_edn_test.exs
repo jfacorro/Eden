@@ -5,13 +5,25 @@ defmodule ExEdnTest do
   alias ExEdn.Symbol
   alias ExEdn.UUID
   alias ExEdn.Tag
+  alias ExEdn.Exception, as: Ex
 
   ## Decode
+
+  test "Decode Empty Input" do
+    e = %Ex.EmptyInputError{}
+    assert decode("") == {:error, e.__struct__}
+
+    assert_raise Ex.EmptyInputError, fn ->
+      decode!("")
+    end
+
+  end
 
   test "Decode Literals" do
     assert decode!("nil") == nil
     assert decode!("true") == true
     assert decode!("false") == false
+    assert decode!("false false") == [false, false]
 
     assert decode!("\"hello world!\"") == "hello world!"
     assert decode!("\"hello \\n world!\"") == "hello \n world!"
@@ -45,6 +57,10 @@ defmodule ExEdnTest do
   test "Decode Map" do
     map = %{name: "John", age: 42}
     assert decode!("{:name \"John\" :age 42}") == map
+
+    assert_raise Ex.OddExpressionCountError, fn ->
+      decode!("{:name \"John\" :age}")
+    end
   end
 
   test "Decode Set" do
@@ -114,6 +130,15 @@ defmodule ExEdnTest do
 
     some_tag = Tag.new("custom/tag", :joni)
     assert encode!(some_tag) == "#custom/tag :joni"
+  end
+
+  test "Encode Unknown Type" do
+    e = %Protocol.UndefinedError{}
+    assert encode(self) == {:error, e.__struct__}
+
+    assert_raise Protocol.UndefinedError, fn ->
+      encode!(self)
+    end
   end
 
   defp custom_tag_handler(value) when is_list(value) do

@@ -7,8 +7,12 @@ defmodule ExEdn do
   @default_handlers %{"inst" => &ExEdn.Tag.inst/1,
                       "uuid" => &ExEdn.Tag.uuid/1}
 
-  def encode(_data) do
-    raise Ex.NotImplementedError, __ENV__.function
+  def encode(data) do
+    try do
+      {:ok, encode!(data)}
+    rescue
+      e -> {:error, e.__struct__}
+    end
   end
 
   def encode!(data) do
