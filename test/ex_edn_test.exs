@@ -132,6 +132,12 @@ defmodule ExEdnTest do
     assert encode!(some_tag) == "#custom/tag :joni"
   end
 
+  test "Encode Fallback to Any" do
+    node = %ExEdn.Parser.Node{}
+    map = Map.from_struct(node)
+    assert encode!(node) == encode!(map)
+  end
+
   test "Encode Unknown Type" do
     e = %Protocol.UndefinedError{}
     assert encode(self) == {:error, e.__struct__}
