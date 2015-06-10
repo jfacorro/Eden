@@ -180,6 +180,12 @@ defmodule ExEdn.ParserTest do
     assert parse("#\{\n;; :name, \n \"John\", 120}") == root
   end
 
+  test "Unexpected Token" do
+    assert_raise Ex.UnexpectedTokenError, fn ->
+      parse("#\{\n;; :name, \n \"John\", 120} }")
+    end
+  end
+
   defp node(type, value, children \\ []) do
     %Parser.Node{type: type,
                  value: value,
