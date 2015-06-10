@@ -1,5 +1,6 @@
 defmodule ExEdn do
   import ExEdn.Parser
+  alias ExEdn.Encode
   alias ExEdn.Decode
   alias ExEdn.Exception, as: Ex
 
@@ -10,8 +11,8 @@ defmodule ExEdn do
     raise Ex.NotImplementedError, __ENV__.function
   end
 
-  def encode!(_data) do
-    raise Ex.NotImplementedError, __ENV__.function
+  def encode!(data) do
+    Encode.encode(data)
   end
 
   def decode(input) do
