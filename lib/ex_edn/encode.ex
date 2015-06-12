@@ -107,7 +107,7 @@ defimpl Encode, for: Any do
   def encode(struct) when is_map(struct) do
     Encode.encode(Map.from_struct(struct))
   end
-  def encode(_)  do
-    raise Protocol.UndefinedError
+  def encode(value)  do
+    raise %Protocol.UndefinedError{protocol: Encode, value: value}
   end
 end
