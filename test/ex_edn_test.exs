@@ -145,6 +145,15 @@ defmodule ExEdnTest do
     assert_raise Protocol.UndefinedError, fn ->
       encode!(self)
     end
+
+    try do
+      encode!(self)
+    rescue
+      e in Protocol.UndefinedError ->
+        assert e.protocol == ExEdn.Encode
+        assert e.value == self
+    end
+
   end
 
   defp custom_tag_handler(value) when is_list(value) do
