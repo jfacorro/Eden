@@ -15,8 +15,8 @@ defmodule ExEdn.Parser.Node do
     import Inspect.Algebra
 
     def inspect(node, opts) do
-      type_str = Atom.to_string(node.type)
-      value_str = if node.value, do: node.value <> " ", else: ""
+      type_str = ":" <> Atom.to_string(node.type)
+      value_str = if node.value, do: "\"" <> node.value <> "\" ", else: ""
 
       location_str = ""
       loc = node.location

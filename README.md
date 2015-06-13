@@ -1,7 +1,49 @@
 ExEdn
 =====
 
+[![Travis](https://img.shields.io/travis/jfacorro/ExEdn.svg?style=flat-square)](https://travis-ci.org/jfacorro/ExEdn)
+
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
+
+## Usage
+
+Include ExEdn as a dependency in your Elixir by adding it in your `deps` list:
+
+```elixir
+def deps do
+  [{:ex_edn, github: "jfacorro/ExEdn", tag: "0.1.2"}]
+end
+```
+
+Since ExEdn is not an OTP application there is no need to add it to the list of `:applications` in your `mix.exs`.
+
+## Examples
+
+```elixir
+iex> ExEdn.encode([1, 2])
+{:ok, "(1, 2)"}
+
+iex> ExEdn.encode(%{a: 1, b: 2, c: 3})
+{:ok, "{:a 1, :b 2, :c 3}"}
+
+iex> ExEdn.encode({:a, 1})
+{:error, Protocol.UndefinedError}
+
+iex> ExEdn.decode("{:a 1 :b 2}")
+{:ok, %{a: 1, b: 2}}
+
+iex> ExEdn.decode("(hello :world \\!)")
+{:ok, [%ExEdn.Symbol{name: "hello"}, :world, %ExEdn.Character{char: "!"}]
+
+iex> ExEdn.decode("[1 2 3 4]")
+{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+
+iex> ExEdn.decode("nil true false")
+{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+
+iex> ExEdn.decode("nil true false .")
+{:error, ExEdn.Exception.UnexpectedInputError}
+```
 
 ## Data Structures Mapping: **edn** <-> **Elixir**
 
@@ -43,22 +85,19 @@ The decision to translate `keyword`s as `atom`s on the EVM comes form the common
 
 There is no constant lookup or nearly constant indexed data structure like **edn**'s `vector` other than the `:array` data structure implemented in one of Erlang's standard library modules. Until there is a better implementation for this `ExEdn` will use the [`Array`](https://github.com/takscape/elixir-array), an Elixir wrapper library for Erlang's array.
 
-Grammar
-=======
+## **edn** grammar
 
 ```
 expr -> literal | map | list | vector | tagged_value
-exprs -> expr exprs
 
 literal -> nil | true | false | keyword | symbol | integer | float | string
 
-map -> { pairs }
-pairs -> pair pairs
+map -> { pair* }
 pair -> expr expr
 
-list -> ( exprs )
+list -> ( expr* )
 
-vector -> [ exprs ]
+vector -> [ expr* ]
 
 tagged_value -> tag expr
 ```

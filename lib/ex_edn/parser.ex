@@ -3,8 +3,51 @@ defmodule ExEdn.Parser do
   alias ExEdn.Parser.Node
   alias ExEdn.Exception, as: Ex
 
+  @moduledoc """
+  Provides a single function that returns an `ExEdn.Parser.Node`
+  struct, which is the `:root` node of the parse tree.
+  """
+
   require Logger
 
+  @doc """
+  Takes a string and returns the root node of the parse tree.
+
+  All nodes are an `ExEdn.Parser.Node` struct, each of which has a `:type`,
+  a `:value` and an optional `:location` property.
+
+  The returned node is always of type `:root`, whose children are all the
+  expressions found in the string provided.
+
+  Options:
+
+  - `:location` - a `boolean` that determines if nodes should include
+                    row and column information.
+
+  ## Examples
+
+      iex> ExEdn.Parser.parse("nil")
+      :root
+        :nil "nil"
+
+      iex> ExEdn.Parse.parse("nil", location: true)
+      :root
+        :nil "nil" (1,0)
+
+      iex> ExEdn.Parse.parse("[1 2 3]")
+      :root
+        :vector
+          :integer "1"
+          :integer "2"
+          :integer "3"
+
+      iex> ExEdn.Parse.parse("[1 2 3]", location: true)
+      :root
+        :vector (1,0)
+          :integer "1" (1,1)
+          :integer "2" (1,3)
+          :integer "3" (1,5)
+  """
   def parse(input, opts \\ [location: false]) when is_binary(input) do
     tokens = Lexer.tokenize(input, opts)
     state = %{tokens: tokens, node: new_node(:root)}
