@@ -13,7 +13,7 @@ Include ExEdn as a dependency in your Elixir by adding it in your `deps` list:
 
 ```elixir
 def deps do
-  [{:ex_edn, github: "jfacorro/ExEdn", tag: "0.1.2"}]
+  [{:ex_edn, "~> 0.1.2"}]
 end
 ```
 
