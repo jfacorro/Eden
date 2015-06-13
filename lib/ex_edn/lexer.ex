@@ -1,5 +1,9 @@
 defmodule ExEdn.Lexer do
   alias ExEdn.Exception, as: Ex
+  @moduledoc """
+  A module that implements a lexer for the edn format through its
+  only function `tokenize/1`.
+  """
 
   defmodule Token do
     defstruct type: nil, value: nil
