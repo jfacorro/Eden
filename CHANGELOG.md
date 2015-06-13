@@ -1,8 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/jfacorro/Eden/tree/HEAD)
+## [0.1.3](https://github.com/jfacorro/Eden/tree/0.1.3) (2015-06-13)
 
-[Full Changelog](https://github.com/jfacorro/Eden/compare/0.1.2...HEAD)
+[Full Changelog](https://github.com/jfacorro/Eden/compare/0.1.2...0.1.3)
 
 **Implemented enhancements:**
 
@@ -10,11 +10,21 @@
 
 **Closed issues:**
 
+- Fix example in README.md and correct the Erlang OTP [\#25](https://github.com/jfacorro/Eden/issues/25)
+
 - Upload generated docs to gh-pages branch  [\#23](https://github.com/jfacorro/Eden/issues/23)
+
+- Rename project ExEdn to Eden [\#21](https://github.com/jfacorro/Eden/issues/21)
 
 - Publish in Hex [\#17](https://github.com/jfacorro/Eden/issues/17)
 
 **Merged pull requests:**
+
+- Version bump to 0.1.3 [\#27](https://github.com/jfacorro/Eden/pull/27) ([jfacorro](https://github.com/jfacorro))
+
+- \[Closes \#25\] Fix README add application deps [\#26](https://github.com/jfacorro/Eden/pull/26) ([jfacorro](https://github.com/jfacorro))
+
+- \[\#21\] Rename from ExEdn to Eden [\#24](https://github.com/jfacorro/Eden/pull/24) ([jfacorro](https://github.com/jfacorro))
 
 - \[Closes \#17\] Publish in hex.pm [\#20](https://github.com/jfacorro/Eden/pull/20) ([jfacorro](https://github.com/jfacorro))
 
