@@ -41,7 +41,7 @@ iex> Eden.decode("[1 2 3 4]")
 {:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
 
 iex> Eden.decode("nil true false")
-{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+{:ok, [nil, true, false]}
 
 iex> Eden.decode("nil true false .")
 {:error, Eden.Exception.UnexpectedInputError}
