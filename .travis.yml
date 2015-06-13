@@ -10,3 +10,5 @@ otp_release:
   - 17.3
   - 17.4
 sudo: false # to use faster container based build environment
+notifications:
+  email: false

@@ -17,7 +17,13 @@ def deps do
 end
 ```
 
-Since Eden is not an OTP application there is no need to add it to the list of `:applications` in your `mix.exs`.
+Eden is a library application and as such doesn't specify an application callback module. Even so, if you would like to build a release that includes Eden, you need to add it as an application depedency in your `mix.exs`:
+
+```elixir
+  def application do
+    [applications: [:eden]]
+  end
+```
 
 ## Examples
 
@@ -41,7 +47,7 @@ iex> Eden.decode("[1 2 3 4]")
 {:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
 
 iex> Eden.decode("nil true false")
-{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+{:ok, [nil, true, false]}
 
 iex> Eden.decode("nil true false .")
 {:error, Eden.Exception.UnexpectedInputError}
