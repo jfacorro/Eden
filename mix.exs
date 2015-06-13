@@ -17,9 +17,12 @@ defmodule ExEdn.Mixfile do
   end
 
   defp deps do
-    [{:exreloader, github: "jfacorro/exreloader", tag: "master", only: :dev},
-     {:array, "~> 1.0.1"},
-     {:timex, "~> 0.13.4"}]
+    [{:array, "~> 1.0.1"},
+     {:timex, "~> 0.13.4"},
+
+     {:exreloader, github: "jfacorro/exreloader", tag: "master", only: :dev},
+     {:ex_doc, "~> 0.7", only: :docs},
+     {:earmark, ">= 0.0.0", only: :docs}]
   end
 
   defp description do

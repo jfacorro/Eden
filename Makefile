@@ -30,3 +30,10 @@ shell: app
 
 escript:
 	mix escript.build
+
+docs:
+	MIX_ENV=docs mix docs
+
+publish:
+	mix hex.publish
+	MIX_ENV=docs mix hex.docs

@@ -1,3 +1,5 @@
 %{"array": {:hex, :array, "1.0.1"},
+  "earmark": {:hex, :earmark, "0.1.17"},
+  "ex_doc": {:hex, :ex_doc, "0.7.3"},
   "exreloader": {:git, "git://github.com/jfacorro/exreloader.git", "c54f341284597d9efbeb0fe05001ff442a87074c", [tag: "master"]},
   "timex": {:hex, :timex, "0.13.4"}}
