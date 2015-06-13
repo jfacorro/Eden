@@ -5,6 +5,46 @@ ExEdn
 
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
+## Usage
+
+Include ExEdn as a dependency in your Elixir by adding it in your `deps` list:
+
+```elixir
+def deps do
+  [{:ex_edn, github: "jfacorro/ExEdn", tag: "0.1.2"}]
+end
+```
+
+Since ExEdn is not an OTP application there is no need to add it to the list of `:applications` in your `mix.exs`.
+
+## Examples
+
+```elixir
+iex> ExEdn.encode([1, 2])
+{:ok, "(1, 2)"}
+
+iex> ExEdn.encode(%{a: 1, b: 2, c: 3})
+{:ok, "{:a 1, :b 2, :c 3}"}
+
+iex> ExEdn.encode({:a, 1})
+{:error, Protocol.UndefinedError}
+
+iex> ExEdn.decode("{:a 1 :b 2}")
+{:ok, %{a: 1, b: 2}}
+
+iex> ExEdn.decode("(hello :world \\!)")
+{:ok, [%ExEdn.Symbol{name: "hello"}, :world, %ExEdn.Character{char: "!"}]
+
+iex> ExEdn.decode("[1 2 3 4]")
+{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+
+iex> ExEdn.decode("nil true false")
+{:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
+
+iex> ExEdn.decode("nil true false .")
+{:error, ExEdn.Exception.UnexpectedInputError}
+```
+
 ## Data Structures Mapping: **edn** <-> **Elixir**
 
 |  Edn | Elixir   |
