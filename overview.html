@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Overview</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script type="text/javascript" charset="utf-8">
+      relpath = '';
+      if (relpath != '') relpath += '/';
+    </script>
+
+    <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+  </head>
+
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+
+    <section id="content">
+      <div class="breadcrumbs">ex_edn v0.1.2 &rarr; <a href="overview.html">Overview</a></div>
+
+      <h1>ex_edn v0.1.2</h1>
+
+      <ul class="summary_links">
+        
+          <li><a href="#modules_summary">Modules</a></li>
+        
+        
+          <li><a href="#exceptions_summary">Exceptions</a></li>
+        
+        
+          <li><a href="#protocols_summary">Protocols</a></li>
+        
+      </ul>
+
+      
+        <h2 id="modules_summary">Modules summary <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="ExEdn.html">ExEdn</a></td>
+  
+    <td class="summary_synopsis"><p>Provides functions to <a href="#encode/1"><code class="inline">encode/1</code></a> and <a href="#decode/2"><code class="inline">decode/2</code></a> between <em>Elixir</em> and
+<em>edn</em> data format</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Character.html">ExEdn.Character</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Decode.html">ExEdn.Decode</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Encode.Utils.html">ExEdn.Encode.Utils</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.html">ExEdn.Exception</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.Util.html">ExEdn.Exception.Util</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Lexer.html">ExEdn.Lexer</a></td>
+  
+    <td class="summary_synopsis"><p>A module that implements a lexer for the edn format through its
+only function <code class="inline">tokenize/1</code></p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Lexer.Token.html">ExEdn.Lexer.Token</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Parser.html">ExEdn.Parser</a></td>
+  
+    <td class="summary_synopsis"><p>Provides a single function that returns an <a href="ExEdn.Parser.Node.html"><code class="inline">ExEdn.Parser.Node</code></a>
+struct, which is the <code class="inline">:root</code> node of the parse tree</p>
+</td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Parser.Node.html">ExEdn.Parser.Node</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Symbol.html">ExEdn.Symbol</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Tag.html">ExEdn.Tag</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.UUID.html">ExEdn.UUID</a></td>
+  
+</tr>
+
+        </table>
+      
+
+      
+        <h2 id="exceptions_summary">Exceptions summary <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.EmptyInputError.html">ExEdn.Exception.EmptyInputError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.IncompleteTagError.html">ExEdn.Exception.IncompleteTagError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.MissingDiscardExpressionError.html">ExEdn.Exception.MissingDiscardExpressionError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.NotImplementedError.html">ExEdn.Exception.NotImplementedError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.OddExpressionCountError.html">ExEdn.Exception.OddExpressionCountError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.UnbalancedDelimiterError.html">ExEdn.Exception.UnbalancedDelimiterError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.UnexpectedInputError.html">ExEdn.Exception.UnexpectedInputError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.UnexpectedTokenError.html">ExEdn.Exception.UnexpectedTokenError</a></td>
+  
+</tr>
+<tr>
+  <td class="summary_signature"><a href="ExEdn.Exception.UnfinishedTokenError.html">ExEdn.Exception.UnfinishedTokenError</a></td>
+  
+</tr>
+
+        </table>
+      
+
+      
+        <h2 id="protocols_summary">Protocols summary <a class="to_top_link" href="#content" title="To the top of the page">&uarr;</a></h2>
+        <table class="summary">
+          <tr>
+  <td class="summary_signature"><a href="ExEdn.Encode.html">ExEdn.Encode</a></td>
+  
+</tr>
+
+        </table>
+      
+    </section>
+  </body>
+</html>
