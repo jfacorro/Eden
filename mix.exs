@@ -13,7 +13,7 @@ defmodule Eden.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:timex, :array]]
   end
 
   defp deps do
