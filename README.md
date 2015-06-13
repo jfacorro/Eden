@@ -1,6 +1,8 @@
 ExEdn
 =====
 
+[![Travis](https://img.shields.io/travis/jfacorro/ExEdn.svg?style=flat-square)](https://travis-ci.org/jfacorro/ExEdn)
+
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
 ## Data Structures Mapping: **edn** <-> **Elixir**
