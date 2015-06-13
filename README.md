@@ -85,22 +85,19 @@ The decision to translate `keyword`s as `atom`s on the EVM comes form the common
 
 There is no constant lookup or nearly constant indexed data structure like **edn**'s `vector` other than the `:array` data structure implemented in one of Erlang's standard library modules. Until there is a better implementation for this `ExEdn` will use the [`Array`](https://github.com/takscape/elixir-array), an Elixir wrapper library for Erlang's array.
 
-Grammar
-=======
+## **edn** grammar
 
 ```
 expr -> literal | map | list | vector | tagged_value
-exprs -> expr exprs
 
 literal -> nil | true | false | keyword | symbol | integer | float | string
 
-map -> { pairs }
-pairs -> pair pairs
+map -> { pair* }
 pair -> expr expr
 
-list -> ( exprs )
+list -> ( expr* )
 
-vector -> [ exprs ]
+vector -> [ expr* ]
 
 tagged_value -> tag expr
 ```
