@@ -1,5 +1,23 @@
 # Change Log
 
+## [0.1.2](https://github.com/jfacorro/ExEdn/tree/0.1.2) (2015-06-13)
+
+[Full Changelog](https://github.com/jfacorro/ExEdn/compare/0.1.1...0.1.2)
+
+**Closed issues:**
+
+- More information for the Protocol.UndefinedError raised by ExEdn.Encode [\#14](https://github.com/jfacorro/ExEdn/issues/14)
+
+- Docs and specs for almost everything [\#10](https://github.com/jfacorro/ExEdn/issues/10)
+
+**Merged pull requests:**
+
+- \[\#18\] Version bump 0.1.2 [\#19](https://github.com/jfacorro/ExEdn/pull/19) ([jfacorro](https://github.com/jfacorro))
+
+- \[Closes \#10\] Docs and specs [\#16](https://github.com/jfacorro/ExEdn/pull/16) ([jfacorro](https://github.com/jfacorro))
+
+- \[\#14\] Added more information to Protocol.UndefinedError [\#15](https://github.com/jfacorro/ExEdn/pull/15) ([jfacorro](https://github.com/jfacorro))
+
 ## [0.1.1](https://github.com/jfacorro/ExEdn/tree/0.1.1) (2015-06-10)
 
 [Full Changelog](https://github.com/jfacorro/ExEdn/compare/0.1.0...0.1.1)
