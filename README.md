@@ -2,6 +2,8 @@ ExEdn
 =====
 
 [![Travis](https://img.shields.io/travis/jfacorro/ExEdn.svg?style=flat-square)](https://travis-ci.org/jfacorro/ExEdn)
+[![Hex.pm](https://img.shields.io/hexpm/v/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
+[![Hex.pm](https://img.shields.io/hexpm/dt/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
 
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
@@ -11,7 +13,7 @@ Include ExEdn as a dependency in your Elixir by adding it in your `deps` list:
 
 ```elixir
 def deps do
-  [{:ex_edn, github: "jfacorro/ExEdn", tag: "0.1.2"}]
+  [{:ex_edn, "~> 0.1.2"}]
 end
 ```
 

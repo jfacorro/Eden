@@ -18,10 +18,7 @@ defmodule ExEdn.Lexer do
 
   Options:
 
-  - `:location` - a `boolean` that determines wether the location information
-                    should be included with each token. Columns are one-based
-                    and columns are zero-based. The default value for :location
-                    is `false`.
+  - `:location` - a `boolean` that determines wether the location information should be included with each token. Columns are one-based and columns are zero-based. The default value for `:location` is `false`.
 
   ## Examples
 

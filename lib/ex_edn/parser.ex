@@ -21,8 +21,7 @@ defmodule ExEdn.Parser do
 
   Options:
 
-  - `:location` - a `boolean` that determines if nodes should include
-                    row and column information.
+  - `:location` - a `boolean` that determines if nodes should include row and column information.
 
   ## Examples
 
