@@ -7,6 +7,8 @@ alias ExEdn.Tag
 
 defprotocol ExEdn.Encode do
   @fallback_to_any true
+
+  @spec encode(any) :: String.t
   def encode(value)
 end
 
