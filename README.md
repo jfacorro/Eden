@@ -2,6 +2,8 @@ ExEdn
 =====
 
 [![Travis](https://img.shields.io/travis/jfacorro/ExEdn.svg?style=flat-square)](https://travis-ci.org/jfacorro/ExEdn)
+[![Hex.pm](https://img.shields.io/hexpm/v/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
+[![Hex.pm](https://img.shields.io/hexpm/dt/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
 
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
