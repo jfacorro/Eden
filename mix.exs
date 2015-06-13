@@ -2,7 +2,7 @@ defmodule ExEdn.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :ex_edn,
+    [app: :eden,
      version: "0.1.2",
      elixir: "~> 1.0",
      description: description,

@@ -1,4 +1,4 @@
-defmodule ExEdn.Exception do
+defmodule Eden.Exception do
 
   defmodule Util do
     def token_message(token) do

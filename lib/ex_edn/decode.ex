@@ -1,9 +1,9 @@
-defmodule ExEdn.Decode do
-  alias ExEdn.Parser.Node
-  alias ExEdn.Character
-  alias ExEdn.Symbol
-  alias ExEdn.Tag
-  alias ExEdn.Exception, as: Ex
+defmodule Eden.Decode do
+  alias Eden.Parser.Node
+  alias Eden.Character
+  alias Eden.Symbol
+  alias Eden.Tag
+  alias Eden.Exception, as: Ex
   require Integer
 
   def decode(children, opts) when is_list(children) do

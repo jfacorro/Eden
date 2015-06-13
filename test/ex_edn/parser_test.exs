@@ -1,8 +1,8 @@
-defmodule ExEdn.ParserTest do
+defmodule Eden.ParserTest do
   use ExUnit.Case
-  import ExEdn.Parser
-  alias ExEdn.Parser
-  alias ExEdn.Exception, as: Ex
+  import Eden.Parser
+  alias Eden.Parser
+  alias Eden.Exception, as: Ex
 
   test "Whitespace" do
     assert parse(",,,  ") == node(:root, nil, [])
