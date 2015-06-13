@@ -1,8 +1,8 @@
-defmodule ExEdn.LexerTest do
+defmodule Eden.LexerTest do
   use ExUnit.Case
-  import ExEdn.Lexer
-  alias ExEdn.Lexer
-  alias ExEdn.Exception, as: Ex
+  import Eden.Lexer
+  alias Eden.Lexer
+  alias Eden.Exception, as: Ex
 
   test "Whitespace" do
     assert tokenize(",,,  ") == []

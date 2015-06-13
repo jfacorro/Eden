@@ -1,4 +1,4 @@
-defmodule ExEdn.Parser.Node do
+defmodule Eden.Parser.Node do
   defstruct type: nil, location: nil, value: nil, children: []
 
   defimpl Access, for: __MODULE__ do

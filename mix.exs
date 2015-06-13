@@ -1,8 +1,8 @@
-defmodule ExEdn.Mixfile do
+defmodule Eden.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :ex_edn,
+    [app: :eden,
      version: "0.1.2",
      elixir: "~> 1.0",
      description: description,
@@ -36,7 +36,7 @@ defmodule ExEdn.Mixfile do
     [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
      contributors: ["Juan Facorro"],
      licenses: ["Apache 2.0"],
-     links: %{"GitHub" => "https://github.com/jfacorro/ExEdn/",
-              "Docs" => "http://jfacorro.github.io/ExEdn/"}]
+     links: %{"GitHub" => "https://github.com/jfacorro/Eden/",
+              "Docs" => "http://jfacorro.github.io/Eden/"}]
   end
 end

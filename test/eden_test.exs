@@ -1,11 +1,11 @@
-defmodule ExEdnTest do
+defmodule EdenTest do
   use ExUnit.Case
-  import ExEdn
-  alias ExEdn.Character
-  alias ExEdn.Symbol
-  alias ExEdn.UUID
-  alias ExEdn.Tag
-  alias ExEdn.Exception, as: Ex
+  import Eden
+  alias Eden.Character
+  alias Eden.Symbol
+  alias Eden.UUID
+  alias Eden.Tag
+  alias Eden.Exception, as: Ex
 
   ## Decode
 
@@ -133,7 +133,7 @@ defmodule ExEdnTest do
   end
 
   test "Encode Fallback to Any" do
-    node = %ExEdn.Parser.Node{}
+    node = %Eden.Parser.Node{}
     map = Map.from_struct(node)
     assert encode!(node) == encode!(map)
   end
@@ -150,7 +150,7 @@ defmodule ExEdnTest do
       encode!(self)
     rescue
       e in Protocol.UndefinedError ->
-        assert e.protocol == ExEdn.Encode
+        assert e.protocol == Eden.Encode
         assert e.value == self
     end
 

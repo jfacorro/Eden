@@ -1,18 +1,18 @@
-alias ExEdn.Encode
-alias ExEdn.Encode.Utils
-alias ExEdn.Character
-alias ExEdn.Symbol
-alias ExEdn.UUID
-alias ExEdn.Tag
+alias Eden.Encode
+alias Eden.Encode.Utils
+alias Eden.Character
+alias Eden.Symbol
+alias Eden.UUID
+alias Eden.Tag
 
-defprotocol ExEdn.Encode do
+defprotocol Eden.Encode do
   @fallback_to_any true
 
   @spec encode(any) :: String.t
   def encode(value)
 end
 
-defmodule ExEdn.Encode.Utils do
+defmodule Eden.Encode.Utils do
   def wrap(str, first, last )do
     first <> str <> last
   end

@@ -1,50 +1,50 @@
-ExEdn
+Eden
 =====
 
-[![Travis](https://img.shields.io/travis/jfacorro/ExEdn.svg?style=flat-square)](https://travis-ci.org/jfacorro/ExEdn)
-[![Hex.pm](https://img.shields.io/hexpm/v/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
-[![Hex.pm](https://img.shields.io/hexpm/dt/ex_edn.svg?style=flat-square)](https://hex.pm/packages/ex_edn)
+[![Travis](https://img.shields.io/travis/jfacorro/Eden.svg?style=flat-square)](https://travis-ci.org/jfacorro/Eden)
+[![Hex.pm](https://img.shields.io/hexpm/v/eden.svg?style=flat-square)](https://hex.pm/packages/eden)
+[![Hex.pm](https://img.shields.io/hexpm/dt/eden.svg?style=flat-square)](https://hex.pm/packages/eden)
 
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
 ## Usage
 
-Include ExEdn as a dependency in your Elixir by adding it in your `deps` list:
+Include Eden as a dependency in your Elixir by adding it in your `deps` list:
 
 ```elixir
 def deps do
-  [{:ex_edn, "~> 0.1.2"}]
+  [{:eden, "~> 0.1.2"}]
 end
 ```
 
-Since ExEdn is not an OTP application there is no need to add it to the list of `:applications` in your `mix.exs`.
+Since Eden is not an OTP application there is no need to add it to the list of `:applications` in your `mix.exs`.
 
 ## Examples
 
 ```elixir
-iex> ExEdn.encode([1, 2])
+iex> Eden.encode([1, 2])
 {:ok, "(1, 2)"}
 
-iex> ExEdn.encode(%{a: 1, b: 2, c: 3})
+iex> Eden.encode(%{a: 1, b: 2, c: 3})
 {:ok, "{:a 1, :b 2, :c 3}"}
 
-iex> ExEdn.encode({:a, 1})
+iex> Eden.encode({:a, 1})
 {:error, Protocol.UndefinedError}
 
-iex> ExEdn.decode("{:a 1 :b 2}")
+iex> Eden.decode("{:a 1 :b 2}")
 {:ok, %{a: 1, b: 2}}
 
-iex> ExEdn.decode("(hello :world \\!)")
-{:ok, [%ExEdn.Symbol{name: "hello"}, :world, %ExEdn.Character{char: "!"}]
+iex> Eden.decode("(hello :world \\!)")
+{:ok, [%Eden.Symbol{name: "hello"}, :world, %Eden.Character{char: "!"}]
 
-iex> ExEdn.decode("[1 2 3 4]")
+iex> Eden.decode("[1 2 3 4]")
 {:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
 
-iex> ExEdn.decode("nil true false")
+iex> Eden.decode("nil true false")
 {:ok, #Array<[1, 2, 3, 4], fixed=false, default=nil>}
 
-iex> ExEdn.decode("nil true false .")
-{:error, ExEdn.Exception.UnexpectedInputError}
+iex> Eden.decode("nil true false .")
+{:error, Eden.Exception.UnexpectedInputError}
 ```
 
 ## Data Structures Mapping: **edn** <-> **Elixir**
@@ -55,8 +55,8 @@ iex> ExEdn.decode("nil true false .")
 | `true`   | `:true = true` |
 | `false`  | `:false = false` |
 | `string` | `String` |
-| `character` | `ExEdn.Character` |
-| `symbol`  | `ExEdn.Symbol` |
+| `character` | `Eden.Character` |
+| `symbol`  | `Eden.Symbol` |
 | `keyword`  | `Atom` |
 | `integer`  | `Integer` |
 | `float`  | `Float` |
@@ -65,7 +65,7 @@ iex> ExEdn.decode("nil true false .")
 | `map`  | `Map` |
 | `set`  | `HashSet` |
 | `#inst`  | `Timex.DateTime` |
-| `#uuid`  | `ExEdn.UUID` |
+| `#uuid`  | `Eden.UUID` |
 
 ## Further Considerations
 
@@ -81,11 +81,11 @@ On the other hand native arbitrary precision floating point numbers are not prov
 
 ### `Keyword` and `Symbol` Representation
 
-The decision to translate `keyword`s as `atom`s on the EVM comes form the common use these two data type are given. It might get awkward really quickly using a new `ExEdn.Symbol` struct as the representation for **edn**'s `symbol`s so this might change.
+The decision to translate `keyword`s as `atom`s on the EVM comes form the common use these two data type are given. It might get awkward really quickly using a new `Eden.Symbol` struct as the representation for **edn**'s `symbol`s so this might change.
 
 ### `vector`
 
-There is no constant lookup or nearly constant indexed data structure like **edn**'s `vector` other than the `:array` data structure implemented in one of Erlang's standard library modules. Until there is a better implementation for this `ExEdn` will use the [`Array`](https://github.com/takscape/elixir-array), an Elixir wrapper library for Erlang's array.
+There is no constant lookup or nearly constant indexed data structure like **edn**'s `vector` other than the `:array` data structure implemented in one of Erlang's standard library modules. Until there is a better implementation for this `Eden` will use the [`Array`](https://github.com/takscape/elixir-array), an Elixir wrapper library for Erlang's array.
 
 ## **edn** grammar
 

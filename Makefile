@@ -1,4 +1,4 @@
-PROJECT=ExEdn
+PROJECT=Eden
 
 all: deps app protocols
 

@@ -1,5 +1,5 @@
-defmodule ExEdn.Lexer do
-  alias ExEdn.Exception, as: Ex
+defmodule Eden.Lexer do
+  alias Eden.Exception, as: Ex
   @moduledoc """
   A module that implements a lexer for the edn format through its
   only function `tokenize/1`.
@@ -22,11 +22,11 @@ defmodule ExEdn.Lexer do
 
   ## Examples
 
-      iex> ExEdn.Lexer.tokenize("nil")
-      [%ExEdn.Lexer.Token{type: nil, value: "nil"}]
+      iex> Eden.Lexer.tokenize("nil")
+      [%Eden.Lexer.Token{type: nil, value: "nil"}]
 
-      iex> ExEdn.Lexer.tokenize("nil", location: true)
-      [%ExEdn.Lexer.Token{location: %{col: 0, line: 1}, type: nil, value: "nil"}]
+      iex> Eden.Lexer.tokenize("nil", location: true)
+      [%Eden.Lexer.Token{location: %{col: 0, line: 1}, type: nil, value: "nil"}]
   """
   def tokenize(input, opts \\ [location: false]) do
     initial_state = %{state: :new,

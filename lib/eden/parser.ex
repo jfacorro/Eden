@@ -1,10 +1,10 @@
-defmodule ExEdn.Parser do
-  alias ExEdn.Lexer
-  alias ExEdn.Parser.Node
-  alias ExEdn.Exception, as: Ex
+defmodule Eden.Parser do
+  alias Eden.Lexer
+  alias Eden.Parser.Node
+  alias Eden.Exception, as: Ex
 
   @moduledoc """
-  Provides a single function that returns an `ExEdn.Parser.Node`
+  Provides a single function that returns an `Eden.Parser.Node`
   struct, which is the `:root` node of the parse tree.
   """
 
@@ -13,7 +13,7 @@ defmodule ExEdn.Parser do
   @doc """
   Takes a string and returns the root node of the parse tree.
 
-  All nodes are an `ExEdn.Parser.Node` struct, each of which has a `:type`,
+  All nodes are an `Eden.Parser.Node` struct, each of which has a `:type`,
   a `:value` and an optional `:location` property.
 
   The returned node is always of type `:root`, whose children are all the
@@ -25,22 +25,22 @@ defmodule ExEdn.Parser do
 
   ## Examples
 
-      iex> ExEdn.Parser.parse("nil")
+      iex> Eden.Parser.parse("nil")
       :root
         :nil "nil"
 
-      iex> ExEdn.Parse.parse("nil", location: true)
+      iex> Eden.Parse.parse("nil", location: true)
       :root
         :nil "nil" (1,0)
 
-      iex> ExEdn.Parse.parse("[1 2 3]")
+      iex> Eden.Parse.parse("[1 2 3]")
       :root
         :vector
           :integer "1"
           :integer "2"
           :integer "3"
 
-      iex> ExEdn.Parse.parse("[1 2 3]", location: true)
+      iex> Eden.Parse.parse("[1 2 3]", location: true)
       :root
         :vector (1,0)
           :integer "1" (1,1)
