@@ -27,8 +27,7 @@ defmodule Eden.Mixfile do
 
   defp description do
     """
-    [edn](https://github.com/edn-format/edn) (extensible data notation)
-    encoder/decoder implemented in Elixir.
+    edn (extensible data notation) encoder/decoder implemented in Elixir.
     """
   end
 
@@ -37,6 +36,6 @@ defmodule Eden.Mixfile do
      contributors: ["Juan Facorro"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/jfacorro/Eden/",
-              "Docs" => "http://jfacorro.github.io/Eden/"}]
+              "edn format" => "https://github.com/edn-format/edn"}]
   end
 end
