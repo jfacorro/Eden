@@ -9,7 +9,7 @@ Eden
 
 ## Usage
 
-Include Eden as a dependency in your Elixir by adding it in your `deps` list:
+Include Eden as a dependency in your Elixir project by adding it in your `deps` list:
 
 ```elixir
 def deps do
