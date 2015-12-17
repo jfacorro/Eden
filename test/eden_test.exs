@@ -122,16 +122,6 @@ defmodule EdenTest do
     assert encode!(set) == "#\{:name, :age, \"John\", 42}"
   end
 
-  test "Encode Tag" do
-    date = Timex.DateFormat.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
-    assert encode!(date) == "#inst \"1985-04-12T23:20:50.052Z\""
-    uuid = UUID.new("f81d4fae-7dec-11d0-a765-00a0c91e6bf6")
-    assert encode!(uuid) == "#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\""
-
-    some_tag = Tag.new("custom/tag", :joni)
-    assert encode!(some_tag) == "#custom/tag :joni"
-  end
-
   test "Encode Fallback to Any" do
     node = %Eden.Parser.Node{}
     map = Map.from_struct(node)

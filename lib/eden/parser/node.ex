@@ -1,14 +1,9 @@
 defmodule Eden.Parser.Node do
   defstruct type: nil, location: nil, value: nil, children: []
 
-  defimpl Access, for: __MODULE__ do
-    def get(node, key) do
-      :maps.get(key, node)
-    end
-    def get_and_update(node, key, fun) do
-      {get, update} = fun.(:maps.get(key, node))
-      {get, :maps.put(key, update, node)}
-    end
+  def get_and_update(node, key, fun) do
+    {get, update} = fun.(:maps.get(key, node))
+    {get, :maps.put(key, update, node)}
   end
 
   defimpl Inspect, for: __MODULE__ do
