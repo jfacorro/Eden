@@ -4,7 +4,7 @@ defmodule Eden.Mixfile do
   def project do
     [app: :eden,
      version: "0.2.0",
-     elixir: "~> 1.1.0",
+     elixir: "~> 1.1",
      description: description,
      package: package,
      build_embedded: Mix.env == :prod,
