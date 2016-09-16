@@ -36,4 +36,4 @@ docs:
 
 publish:
 	mix hex.publish
-	MIX_ENV=docs mix hex.docs
+	mix hex.publish docs
