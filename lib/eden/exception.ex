@@ -5,9 +5,10 @@ defmodule Eden.Exception do
       msg = "(#{inspect token.type}) #{inspect token.value}"
       if Map.has_key?(token, :location) do
         loc = token.location
-        msg = msg <> " at line #{inspect loc.line} and column #{inspect loc.col}."
+        msg <> " at line #{inspect loc.line} and column #{inspect loc.col}."
+      else
+        msg
       end
-      msg
     end
   end
 

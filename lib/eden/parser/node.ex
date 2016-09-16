@@ -1,14 +1,21 @@
 defmodule Eden.Parser.Node do
   defstruct type: nil, location: nil, value: nil, children: []
+  @behaviour Access
 
-  defimpl Access, for: __MODULE__ do
-    def get(node, key) do
-      :maps.get(key, node)
-    end
-    def get_and_update(node, key, fun) do
-      {get, update} = fun.(:maps.get(key, node))
-      {get, :maps.put(key, update, node)}
-    end
+  def fetch(map, key) do
+    Map.fetch(map, key)
+  end
+
+  def get(map, key, value) do
+    Map.get(map, key, value)
+  end
+
+  def pop(map, key) do
+    Map.pop(map, key)
+  end
+
+  def get_and_update(%{} = map, key, fun) do
+    Map.get_and_update(map, key, fun)
   end
 
   defimpl Inspect, for: __MODULE__ do
@@ -18,11 +25,13 @@ defmodule Eden.Parser.Node do
       type_str = ":" <> Atom.to_string(node.type)
       value_str = if node.value, do: "\"" <> node.value <> "\" ", else: ""
 
-      location_str = ""
       loc = node.location
+      location_str =
       if loc do
-        location_str = concat ["(", Integer.to_string(loc.line), ",",
-                               Integer.to_string(loc.col), ")"]
+        concat ["(", Integer.to_string(loc.line), ",",
+                Integer.to_string(loc.col), ")"]
+      else
+        ""
       end
 
       level = Map.get(opts, :level, 0)

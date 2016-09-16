@@ -289,8 +289,10 @@ defmodule Eden.Lexer do
   end
 
   defp set_token(state, token) do
-    if state.opts[:location] do
-      token = Map.put(token, :location, state.location)
+    token = if state.opts[:location] do
+      Map.put(token, :location, state.location)
+    else
+      token
     end
     Map.put(state, :current, token)
   end
