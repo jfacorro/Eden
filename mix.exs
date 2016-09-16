@@ -17,8 +17,8 @@ defmodule Eden.Mixfile do
   end
 
   defp deps do
-    [{:array, "~> 1.0.1"},
-     {:timex, "~> 0.13.4"},
+    [{:array, github: "jfacorro/elixir-array", tag: "2.0.0"},
+     {:timex, "~> 1.0.0"},
 
      {:exreloader, github: "jfacorro/exreloader", tag: "master", only: :dev},
      {:ex_doc, "~> 0.7", only: :docs},

@@ -41,14 +41,16 @@ defmodule Eden.Decode do
     value = String.rstrip(value, ?M)
     # Elixir/Erlang don't convert to float if there
     # is no decimal part.
-    if not String.contains?(value, ".") do
+    final_value = if not String.contains?(value, ".") do
       if String.match?(value, ~r/[eE]/) do
-        value = String.replace(value, ~r/[eE]/, ".0E")
+        String.replace(value, ~r/[eE]/, ".0E")
       else
-        value = value <> ".0"
+        value <> ".0"
       end
+    else
+      value
     end
-    :erlang.binary_to_float(value)
+    :erlang.binary_to_float(final_value)
   end
   def decode(%Node{type: :list, children: children}, opts) do
     decode(children, opts)
