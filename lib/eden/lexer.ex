@@ -56,8 +56,8 @@ defmodule Eden.Lexer do
     start_token(state, :comment, token, ";", rest)
   end
   defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>)
-  when <<char>> in ["\n", "\r"] do
-    end_token(state, <<char>>, rest)
+  when <<char :: utf8>> in ["\n", "\r"] do
+    end_token(state, <<char :: utf8>>, rest)
   end
   defp _tokenize(state = %{state: :comment}, <<";" :: utf8, rest :: binary>>) do
     skip_char(state, ";", rest)
@@ -80,7 +80,7 @@ defmodule Eden.Lexer do
     start_token(state, :check_literal, token, "false", rest)
   end
   defp _tokenize(state = %{state: :check_literal}, <<char :: utf8, _ :: binary>> = input) do
-    if separator?(<<char>>) do
+    if separator?(<<char :: utf8>>) do
       end_token(state, "", input)
     else
       token = token(:symbol, state.current.value)
@@ -108,8 +108,8 @@ defmodule Eden.Lexer do
 
   # Character
   defp _tokenize(state = %{state: :new}, <<"\\" :: utf8, char :: utf8, rest :: binary>>) do
-    token = token(:character, <<char>>)
-    end_token(state, token, "\\" <> <<char>>, rest)
+    token = token(:character, <<char :: utf8>>)
+    end_token(state, token, "\\" <> <<char :: utf8>>, rest)
   end
 
   # Keyword and Symbol
@@ -125,7 +125,7 @@ defmodule Eden.Lexer do
     end
   end
   defp _tokenize(state = %{state: :symbol}, <<c :: utf8, rest :: binary>> = input) do
-    if symbol_char?(<<c>>) do
+    if symbol_char?(<<c :: utf8>>) do
       consume_char(state, <<c :: utf8>>, rest)
     else
       end_token(state, "", input)
@@ -157,24 +157,24 @@ defmodule Eden.Lexer do
     start_token(state, :fraction, token, ".", rest)
   end
   defp _tokenize(state = %{state: :number}, <<char :: utf8, rest :: binary>>)
-  when <<char>> in ["e", "E"] do
-    state = append_to_current(state, <<char>>)
+  when <<char :: utf8>> in ["e", "E"] do
+    state = append_to_current(state, <<char :: utf8>>)
     token = token(:float, state.current.value)
-    start_token(state, :exponent, token, <<char>>, rest)
+    start_token(state, :exponent, token, <<char :: utf8>>, rest)
   end
   defp _tokenize(state = %{state: s}, <<char :: utf8, rest :: binary>> = input)
   when s in [:number, :exponent, :fraction] do
     cond do
-      digit?(<<char>>) ->
+      digit?(<<char :: utf8>>) ->
         state
         |> set_state(:number)
         |> consume_char(<<char :: utf8>>, rest)
-      s in [:exponent, :fraction] and separator?(<<char>>) ->
+      s in [:exponent, :fraction] and separator?(<<char :: utf8>>) ->
         raise Ex.UnfinishedTokenError, state.current
-      separator?(<<char>>) ->
+      separator?(<<char :: utf8>>) ->
         end_token(state, "", input)
       true ->
-        raise Ex.UnexpectedInputError, <<char>>
+        raise Ex.UnexpectedInputError, <<char :: utf8>>
     end
   end
 
@@ -211,20 +211,20 @@ defmodule Eden.Lexer do
   # Symbol, Integer or Invalid input
   defp _tokenize(state = %{state: :new}, <<char :: utf8, rest :: binary>>) do
     cond do
-      alpha?(<<char>>) ->
-        token = token(:symbol, <<char>>)
-        start_token(state, :symbol, token, <<char>>, rest)
-      digit?(<<char>>) ->
-        token = token(:integer, <<char>>)
-        start_token(state, :number, token, <<char>>, rest)
+      alpha?(<<char :: utf8>>) ->
+        token = token(:symbol, <<char :: utf8>>)
+        start_token(state, :symbol, token, <<char :: utf8>>, rest)
+      digit?(<<char :: utf8>>) ->
+        token = token(:integer, <<char :: utf8>>)
+        start_token(state, :number, token, <<char :: utf8>>, rest)
       true ->
-        raise Ex.UnexpectedInputError, <<char>>
+        raise Ex.UnexpectedInputError, <<char :: utf8>>
     end
   end
 
   # Unexpected Input
   defp _tokenize(_, <<char :: utf8, _ :: binary>>) do
-    raise Ex.UnexpectedInputError, <<char>>
+    raise Ex.UnexpectedInputError, <<char :: utf8>>
   end
 
   ##############################################################################
