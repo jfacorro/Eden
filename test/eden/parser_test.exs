@@ -45,6 +45,14 @@ defmodule Eden.ParserTest do
     root = node(:root, nil,
                 [node(:string, "Thaïlande")])
     assert parse("\"Thaïlande\"") == root
+
+    assert_raise Ex.UnfinishedTokenError, fn ->
+      parse(":")
+    end
+
+    assert_raise Ex.UnfinishedTokenError, fn ->
+      parse(": :a")
+    end
   end
 
   test "Map" do
