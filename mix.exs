@@ -3,7 +3,7 @@ defmodule Eden.Mixfile do
 
   def project do
     [app: :eden,
-     version: "1.0.1",
+     version: "1.0.2",
      elixir: "~> 1.3.2",
      description: description,
      package: package,
