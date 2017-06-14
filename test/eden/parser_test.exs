@@ -41,6 +41,10 @@ defmodule Eden.ParserTest do
                 [node(:character, "h"),
                  node(:character, "i")])
     assert parse("\\h\\i") == root
+
+    root = node(:root, nil,
+                [node(:string, "Thaïlande")])
+    assert parse("\"Thaïlande\"") == root
   end
 
   test "Map" do

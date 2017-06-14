@@ -51,7 +51,7 @@ defmodule Eden.Lexer do
   end
 
   # Comment
-  defp _tokenize(state = %{state: :new}, <<";", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<";" :: utf8, rest :: binary>>) do
     token = token(:comment, "")
     start_token(state, :comment, token, ";", rest)
   end
@@ -59,23 +59,23 @@ defmodule Eden.Lexer do
   when <<char>> in ["\n", "\r"] do
     end_token(state, <<char>>, rest)
   end
-  defp _tokenize(state = %{state: :comment}, <<";", rest :: binary>>) do
+  defp _tokenize(state = %{state: :comment}, <<";" :: utf8, rest :: binary>>) do
     skip_char(state, ";", rest)
   end
   defp _tokenize(state = %{state: :comment}, <<char :: utf8, rest :: binary>>) do
-    consume_char(state, <<char>>, rest)
+    consume_char(state, <<char :: utf8>>, rest)
   end
 
   # Literals
-  defp _tokenize(state = %{state: :new}, <<"nil", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"nil" :: utf8, rest :: binary>>) do
     token = token(:nil, "nil")
     start_token(state, :check_literal, token, "nil", rest)
   end
-  defp _tokenize(state = %{state: :new}, <<"true", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"true"  :: utf8, rest :: binary>>) do
     token = token(:true, "true")
     start_token(state, :check_literal, token, "true", rest)
   end
-  defp _tokenize(state = %{state: :new}, <<"false", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"false"  :: utf8, rest :: binary>>) do
     token = token(:false, "false")
     start_token(state, :check_literal, token, "false", rest)
   end
@@ -89,44 +89,44 @@ defmodule Eden.Lexer do
   end
 
   # String
-  defp _tokenize(state = %{state: :new}, <<"\"", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"\"" :: utf8, rest :: binary>>) do
     token = token(:string, "")
     start_token(state, :string, token, "\"", rest)
   end
-  defp _tokenize(state = %{state: :string}, <<"\\", char :: utf8, rest :: binary>>) do
+  defp _tokenize(state = %{state: :string}, <<"\\" :: utf8, char :: utf8, rest :: binary>>) do
     # TODO: this will cause the line count to get corrupted,
     #       either use the original or send the real content as
     #       an optional argument.
-    consume_char(state, escaped_char(<<char>>), rest, <<"\\", char :: utf8>>)
+    consume_char(state, escaped_char(<<char :: utf8>>), rest, <<"\\" :: utf8, char :: utf8>>)
   end
   defp _tokenize(state = %{state: :string}, <<"\"" :: utf8, rest :: binary>>) do
     end_token(state, "\"", rest)
   end
   defp _tokenize(state = %{state: :string}, <<char :: utf8, rest :: binary>>) do
-    consume_char(state, <<char>>, rest)
+    consume_char(state, <<char :: utf8>>, rest)
   end
 
   # Character
-  defp _tokenize(state = %{state: :new}, <<"\\", char :: utf8, rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"\\" :: utf8, char :: utf8, rest :: binary>>) do
     token = token(:character, <<char>>)
     end_token(state, token, "\\" <> <<char>>, rest)
   end
 
   # Keyword and Symbol
-  defp _tokenize(state = %{state: :new}, <<":", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<":" :: utf8, rest :: binary>>) do
     token = token(:keyword, "")
     start_token(state, :symbol, token, ":", rest)
   end
-  defp _tokenize(state = %{state: :symbol}, <<"/", rest :: binary>>) do
+  defp _tokenize(state = %{state: :symbol}, <<"/" :: utf8, rest :: binary>>) do
     if not String.contains?(state.current.value, "/") do
-      consume_char(state, "/", rest)
+      consume_char(state, <<"/" :: utf8>>, rest)
     else
       raise Ex.UnexpectedInputError, "/"
     end
   end
   defp _tokenize(state = %{state: :symbol}, <<c :: utf8, rest :: binary>> = input) do
     if symbol_char?(<<c>>) do
-      consume_char(state, <<c>>, rest)
+      consume_char(state, <<c :: utf8>>, rest)
     else
       end_token(state, "", input)
     end
@@ -140,18 +140,18 @@ defmodule Eden.Lexer do
   end
   defp _tokenize(state = %{state: :exponent}, <<sign :: utf8, rest :: binary>>)
   when <<sign>> in ["-", "+"] do
-    consume_char(state, <<sign>>, rest)
+    consume_char(state, <<sign :: utf8>>, rest)
   end
-  defp _tokenize(state = %{state: :number}, <<"N", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<"N" :: utf8, rest :: binary>>) do
     state = append_to_current(state, "N")
     end_token(state, "N", rest)
   end
-  defp _tokenize(state = %{state: :number}, <<"M", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<"M" :: utf8, rest :: binary>>) do
     state = append_to_current(state, "M")
     token = token(:float, state.current.value)
     end_token(state, token, "M", rest)
   end
-  defp _tokenize(state = %{state: :number}, <<".", rest :: binary>>) do
+  defp _tokenize(state = %{state: :number}, <<"." :: utf8, rest :: binary>>) do
     state = append_to_current(state, ".")
     token = token(:float, state.current.value)
     start_token(state, :fraction, token, ".", rest)
@@ -168,7 +168,7 @@ defmodule Eden.Lexer do
       digit?(<<char>>) ->
         state
         |> set_state(:number)
-        |> consume_char(<<char>>, rest)
+        |> consume_char(<<char :: utf8>>, rest)
       s in [:exponent, :fraction] and separator?(<<char>>) ->
         raise Ex.UnfinishedTokenError, state.current
       separator?(<<char>>) ->
@@ -185,7 +185,7 @@ defmodule Eden.Lexer do
     token = token(delim_type(delim), delim)
     end_token(state, token, delim, rest)
   end
-  defp _tokenize(state = %{state: :new}, <<"#\{", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"#\{" :: utf8, rest :: binary>>) do
     token = token(:set_open, "#\{")
     end_token(state, token, "#\{", rest)
   end
@@ -197,13 +197,13 @@ defmodule Eden.Lexer do
   end
 
   # Discard
-  defp _tokenize(state = %{state: :new}, <<"#_", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"#_" :: utf8, rest :: binary>>) do
     token = token(:discard, "#_")
     end_token(state, token, "#_", rest)
   end
 
   # Tags
-  defp _tokenize(state = %{state: :new}, <<"#", rest :: binary>>) do
+  defp _tokenize(state = %{state: :new}, <<"#" :: utf8, rest :: binary>>) do
     token = token(:tag, "")
     start_token(state, :symbol, token, "#", rest)
   end
