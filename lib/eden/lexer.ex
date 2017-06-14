@@ -18,7 +18,9 @@ defmodule Eden.Lexer do
 
   Options:
 
-  - `:location` - a `boolean` that determines wether the location information should be included with each token. Columns are one-based and columns are zero-based. The default value for `:location` is `false`.
+  - `:location` - a `boolean` that determines wether the location information
+     should be included with each token. Lines are one-based and columns are
+     zero-based. The default value for `:location` is `false`.
 
   ## Examples
 
@@ -324,6 +326,9 @@ defmodule Eden.Lexer do
     state
   end
   defp add_token(state, token) do
+    if token.type == :keyword and token.value == "" do
+      raise Ex.UnfinishedTokenError, token
+    end
     %{state | tokens: [token | state.tokens]}
   end
 
