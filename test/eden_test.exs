@@ -69,7 +69,7 @@ defmodule EdenTest do
   end
 
   test "Decode Tag" do
-    date = Timex.DateFormat.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
+    date = Timex.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
     assert decode!("#inst \"1985-04-12T23:20:50.52Z\"") == date
     assert decode!("#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\"") == %UUID{value: "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"}
 
@@ -123,8 +123,8 @@ defmodule EdenTest do
   end
 
   test "Encode Tag" do
-    date = Timex.DateFormat.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
-    assert encode!(date) == "#inst \"1985-04-12T23:20:50.520Z\""
+    date = Timex.parse!("1985-04-12T23:20:50.52Z", "{RFC3339z}")
+    assert encode!(date) == "#inst \"1985-04-12T23:20:50.52Z\""
     uuid = UUID.new("f81d4fae-7dec-11d0-a765-00a0c91e6bf6")
     assert encode!(uuid) == "#uuid \"f81d4fae-7dec-11d0-a765-00a0c91e6bf6\""
 

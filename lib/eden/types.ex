@@ -22,7 +22,7 @@ defmodule Eden.Tag do
   def new(name, value), do: %Eden.Tag{name: name, value: value}
 
   def inst(datetime) do
-    Timex.DateFormat.parse!(datetime, "{RFC3339z}")
+    Timex.parse!(datetime, "{RFC3339z}")
   end
 
   def uuid(value), do: %Eden.UUID{value: value}
