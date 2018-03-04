@@ -98,9 +98,9 @@ defimpl Encode, for: UUID do
   end
 end
 
-defimpl Encode, for: Timex.DateTime do
+defimpl Encode, for: DateTime do
   def encode(datetime) do
-    value = Timex.DateFormat.format!(datetime, "{RFC3339z}")
+    value = Timex.format!(datetime, "{RFC3339z}")
     Encode.encode(Tag.new("inst", value))
   end
 end
