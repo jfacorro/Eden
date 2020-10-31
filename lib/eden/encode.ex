@@ -76,7 +76,7 @@ defimpl Encode, for: Map do
   end
 end
 
-defimpl Encode, for: HashSet do
+defimpl Encode, for: MapSet do
   def encode(set) do
     set
     |> Enum.map(&Encode.encode/1)

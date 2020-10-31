@@ -27,7 +27,7 @@ defmodule Eden do
   - `Float`
   - `Map`
   - `List`
-  - `HashSet`
+  - `MapSet`
 
   There are also implementations for the following custom *Elixir* data
   types in order to support native *edn* types:

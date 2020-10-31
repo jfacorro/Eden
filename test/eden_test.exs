@@ -64,7 +64,7 @@ defmodule EdenTest do
   end
 
   test "Decode Set" do
-    set = Enum.into([:name, "John", :age, 42], HashSet.new)
+    set = Enum.into([:name, "John", :age, 42], MapSet.new)
     assert decode!("#\{:name \"John\" :age 42}") == set
   end
 
@@ -118,8 +118,8 @@ defmodule EdenTest do
   end
 
   test "Encode Set" do
-    set = Enum.into([:name, "John", :age, 42], HashSet.new)
-    assert encode!(set) == "#\{:name, :age, \"John\", 42}"
+    set = Enum.into([:name, "John", :age, 42], MapSet.new)
+    assert encode!(set) == "#\{42, :age, :name, \"John\"}"
   end
 
   test "Encode Tag" do
@@ -140,18 +140,18 @@ defmodule EdenTest do
 
   test "Encode Unknown Type" do
     e = %Protocol.UndefinedError{}
-    assert encode(self) == {:error, e.__struct__}
+    assert encode(self()) == {:error, e.__struct__}
 
     assert_raise Protocol.UndefinedError, fn ->
-      encode!(self)
+      encode!(self())
     end
 
     try do
-      encode!(self)
+      encode!(self())
     rescue
       e in Protocol.UndefinedError ->
         assert e.protocol == Eden.Encode
-        assert e.value == self
+        assert e.value == self()
     end
 
   end
