@@ -13,11 +13,11 @@ defmodule Eden.Mixfile do
   end
 
   def application do
-    [applications: [:timex, :array]]
+    [applications: [:timex, :elixir_array]]
   end
 
   defp deps do
-    [{:array, github: "jfacorro/elixir-array", tag: "2.0.0"},
+    [{:elixir_array, "~> 2.1.0"},
      {:timex, "~> 3.1"},
 
      {:exreloader, github: "jfacorro/exreloader", tag: "master", only: :dev},
