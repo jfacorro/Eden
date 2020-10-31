@@ -6,6 +6,8 @@
 
 **Merged pull requests:**
 
+- \[\#39\] Adapt library for publishing [\#42](https://github.com/jfacorro/Eden/pull/42) ([jfacorro](https://github.com/jfacorro))
+- \[\#39\] Update CHANGELOG [\#41](https://github.com/jfacorro/Eden/pull/41) ([jfacorro](https://github.com/jfacorro))
 - Update Travis CI configuration with latest OTP and Elixir versions [\#40](https://github.com/jfacorro/Eden/pull/40) ([jfacorro](https://github.com/jfacorro))
 - Bumps elixir [\#38](https://github.com/jfacorro/Eden/pull/38) ([naomijub](https://github.com/naomijub))
 
@@ -39,7 +41,7 @@
 
 **Merged pull requests:**
 
-- Bump version [\#34](https://github.com/jfacorro/Eden/pull/34) ([jfacorro](https://github.com/jfacorro))
+- \[\#32\] Specify utf8 encoding for all binaries built in lexer [\#35](https://github.com/jfacorro/Eden/pull/35) ([jfacorro](https://github.com/jfacorro))
 - \[Fixes \#32\] Specify utf8 enconding when buliding single char binaries in lexer [\#33](https://github.com/jfacorro/Eden/pull/33) ([jfacorro](https://github.com/jfacorro))
 
 ## [1.0.0](https://github.com/jfacorro/Eden/tree/1.0.0) (2016-09-16)
@@ -52,7 +54,6 @@
 
 **Merged pull requests:**
 
-- \[Closes \#30\] Fix warning and replaced Access protocol for behaviour [\#31](https://github.com/jfacorro/Eden/pull/31) ([jfacorro](https://github.com/jfacorro))
 - Force build [\#28](https://github.com/jfacorro/Eden/pull/28) ([jfacorro](https://github.com/jfacorro))
 
 ## [0.1.3](https://github.com/jfacorro/Eden/tree/0.1.3) (2015-06-13)
@@ -72,7 +73,8 @@
 
 **Merged pull requests:**
 
-- \[\#32\] Specify utf8 encoding for all binaries built in lexer [\#35](https://github.com/jfacorro/Eden/pull/35) ([jfacorro](https://github.com/jfacorro))
+- Bump version [\#34](https://github.com/jfacorro/Eden/pull/34) ([jfacorro](https://github.com/jfacorro))
+- \[Closes \#30\] Fix warning and replaced Access protocol for behaviour [\#31](https://github.com/jfacorro/Eden/pull/31) ([jfacorro](https://github.com/jfacorro))
 - Version bump to 0.1.3 [\#27](https://github.com/jfacorro/Eden/pull/27) ([jfacorro](https://github.com/jfacorro))
 - \[Closes \#25\] Fix README add application deps [\#26](https://github.com/jfacorro/Eden/pull/26) ([jfacorro](https://github.com/jfacorro))
 - \[\#21\] Rename from ExEdn to Eden [\#24](https://github.com/jfacorro/Eden/pull/24) ([jfacorro](https://github.com/jfacorro))
