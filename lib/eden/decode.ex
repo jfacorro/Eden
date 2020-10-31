@@ -73,7 +73,7 @@ defmodule Eden.Decode do
   def decode(%Node{type: :set, children: children}, opts) do
     children
     |> decode(opts)
-    |> Enum.into(HashSet.new)
+    |> Enum.into(MapSet.new)
   end
   def decode(%Node{type: :tag, value: name, children: [child]}, opts) do
     case Map.get(opts[:handlers], name) do
