@@ -1,9 +1,12 @@
 Eden
 =====
 
-[![Travis](https://img.shields.io/travis/jfacorro/Eden.svg?style=flat-square)](https://travis-ci.org/jfacorro/Eden)
+[![GitHub](https://github.com/jfacorro/Eden/workflows/Build/badge.svg)](https://github.com/jfacorro/Eden/actions?query=workflow%3ABuild)
 [![Hex.pm](https://img.shields.io/hexpm/v/eden.svg?style=flat-square)](https://hex.pm/packages/eden)
+[![Hexdocs.pm](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/eden/)
 [![Hex.pm](https://img.shields.io/hexpm/dt/eden.svg?style=flat-square)](https://hex.pm/packages/eden)
+[![Hex.pm](https://img.shields.io/hexpm/l/eden.svg?style=flat-square)](https://hex.pm/packages/eden)
+[![GitHub](https://img.shields.io/github/last-commit/jfacorro/Eden.svg)](https://github.com/jfacorro/Eden/commits/master)
 
 [edn](https://github.com/edn-format/edn) (extensible data notation) encoder/decoder implemented in Elixir.
 
@@ -108,5 +111,4 @@ list -> ( expr* )
 vector -> [ expr* ]
 
 tagged_value -> tag expr
-
 ```
