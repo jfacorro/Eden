@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.0](https://github.com/jfacorro/Eden/tree/2.1.0)
+## [2.1.0](https://github.com/jfacorro/Eden/tree/2.1.0) (2020-10-31)
 
 [Full Changelog](https://github.com/jfacorro/Eden/compare/2.0.0...2.1.0)
 
